@@ -12,7 +12,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
-	"github.com/flipped-aurora/gin-vue-admin/server/model/ncr"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/applet"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -99,7 +99,7 @@ type Issues struct {
 	Name string `json:"name" gorm:"comment:类别"`
 }
 
-func CreateFile(m ncr.Manage) error {
+func CreateFile(m applet.Manage) error {
 	var f = excelize.NewFile()
 	index, _ := f.NewSheet(Sheet)
 	f.SetActiveSheet(index)

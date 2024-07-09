@@ -51,7 +51,7 @@ func Routers() *gin.Engine {
 	exampleRouter := router.RouterGroupApp.Example
 
 	//ncr router
-	ncrRouter := router.RouterGroupApp.Ncr
+	appletRouter := router.RouterGroupApp.Applet
 	// 如果想要不使用nginx代理前端网页，可以修改 web/.env.production 下的
 	// VUE_APP_BASE_API = /
 	// VUE_APP_BASE_PATH = http://localhost
@@ -101,13 +101,13 @@ func Routers() *gin.Engine {
 		systemRouter.InitSysExportTemplateRouter(PrivateGroup)      // 导出模板
 		exampleRouter.InitCustomerRouter(PrivateGroup)              // 客户路由
 		exampleRouter.InitFileUploadAndDownloadRouter(PrivateGroup) // 文件上传下载功能路由
-		ncrRouter.InitSupplierRouter(PrivateGroup)                  //供应商管理
-		ncrRouter.InitTypeRouter(PrivateGroup)                      //类别管理
-		ncrRouter.InitProjectRouter(PrivateGroup)
-		ncrRouter.InitManageRouter(PrivateGroup)
-		ncrRouter.InitComplaintRouter(PrivateGroup)
-		ncrRouter.InitMessageRouter(PrivateGroup)
-		ncrRouter.InitProductRouter(PrivateGroup)
+		appletRouter.InitSupplierRouter(PrivateGroup)               //供应商管理
+		appletRouter.InitTypeRouter(PrivateGroup)                   //类别管理
+		appletRouter.InitProjectRouter(PrivateGroup)
+		appletRouter.InitManageRouter(PrivateGroup)
+		appletRouter.InitComplaintRouter(PrivateGroup)
+		appletRouter.InitMessageRouter(PrivateGroup)
+		appletRouter.InitProductRouter(PrivateGroup)
 	}
 
 	global.GVA_LOG.Info("router register success")

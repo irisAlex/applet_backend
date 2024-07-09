@@ -17,8 +17,8 @@ type GetByName struct {
 	Name string `json:"name" form:"id"` // 主键ID
 }
 
-type GetByNcrID struct {
-	NcrID      int64  `json:"ncr_id" form:"ncr_id"`
+type GetByAppletID struct {
+	AppletID   int64  `json:"ncr_id" form:"ncr_id"`
 	ReportName string `json:"reportname" form:"id"` // 主键ID
 }
 

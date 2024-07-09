@@ -151,7 +151,7 @@ pgsql:
     prefix: ""
     port: "16798"
     config: sslmode=disable TimeZone=Asia/Shanghai
-    db-name: ncr
+    db-name: applet
     username: anx
     password: anx13393133611A
     path: 8.140.252.134
