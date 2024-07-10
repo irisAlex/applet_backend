@@ -11,9 +11,9 @@ import service from "@/utils/request";
 //  page     int
 //	pageSize int
 // }
-export const getProjectList = (data) => {
+export const getPostList = (data) => {
   return service({
-    url: "/project/getAllProjectList",
+    url: "/Post/getAllPostList",
     method: "post",
     data,
   });
@@ -27,9 +27,9 @@ export const getProjectList = (data) => {
 // @Param data body api.CreateApiParams true "创建api"
 // @Success 200 {string} json "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /api/createApi [post]
-export const createProject = (data) => {
+export const createPost = (data) => {
   return service({
-    url: "/project/createProject",
+    url: "/Post/createPost",
     method: "post",
     data,
   });
@@ -43,13 +43,31 @@ export const createProject = (data) => {
 // @Param data body api.GetById true "根据id获取菜单"
 // @Success 200 {string} json "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /menu/getApiById [post]
-export const getProjectById = (data) => {
+export const getPostById = (data) => {
   return service({
-    url: "/project/getProjectById",
+    url: "/Post/getPostById",
     method: "post",
     data,
   });
 };
+
+export const getSubjectByEId = (data) => {
+  return service({
+    url: "/Subject/getSubjectByEID",
+    method: "post",
+    data,
+  });
+};
+
+export const getSubjectByEName = (data) => {
+  return service({
+    url: "/Subject/getSubjectByEName",
+    method: "post",
+    data,
+  });
+};
+
+
 
 // @Tags Api
 // @Summary 更新api
@@ -59,17 +77,17 @@ export const getProjectById = (data) => {
 // @Param data body api.CreateApiParams true "更新api"
 // @Success 200 {string} json "{"success":true,"data":{},"msg":"更新成功"}"
 // @Router /api/updateApi [post]
-export const updateProject = (data) => {
+export const updatePost = (data) => {
   return service({
-    url: "/project/updateProject",
+    url: "/Post/updatePost",
     method: "post",
     data,
   });
 };
 
-export const deleteProject = (data) => {
+export const deletePost = (data) => {
   return service({
-    url: "/project/deleteProject",
+    url: "/Post/deletePost",
     method: "post",
     data,
   });

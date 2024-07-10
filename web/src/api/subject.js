@@ -12,9 +12,9 @@ import service from "@/utils/request";
 //  page     int
 //	pageSize int
 // }
-export const getSupplierList = (data) => {
+export const getSubjectList = (data) => {
   return service({
-    url: "/supplier/getAllSupplierList",
+    url: "/Subject/getAllSubjectList",
     method: "post",
     data,
   });
@@ -28,9 +28,9 @@ export const getSupplierList = (data) => {
 // @Param data body api.CreateApiParams true "创建api"
 // @Success 200 {string} json "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /api/createApi [post]
-export const createSupplierApi = (data) => {
+export const createSubject = (data) => {
   return service({
-    url: "/supplier/createSupplierApi",
+    url: "/Subject/createSubjectApi",
     method: "post",
     data,
   });
@@ -44,9 +44,9 @@ export const createSupplierApi = (data) => {
 // @Param data body api.GetById true "根据id获取菜单"
 // @Success 200 {string} json "{"success":true,"data":{},"msg":"获取成功"}"
 // @Router /menu/getApiById [post]
-export const getSupplierById = (data) => {
+export const getSubjectById = (data) => {
   return service({
-    url: "/supplier/getSupplierById",
+    url: "/Subject/getSubjectById",
     method: "post",
     data,
   });
@@ -60,9 +60,9 @@ export const getSupplierById = (data) => {
 // @Param data body api.CreateApiParams true "更新api"
 // @Success 200 {string} json "{"success":true,"data":{},"msg":"更新成功"}"
 // @Router /api/updateApi [post]
-export const updateSupplier = (data) => {
+export const updateSubject = (data) => {
   return service({
-    url: "/supplier/updateSupplier",
+    url: "/Subject/updateSubject",
     method: "post",
     data,
   });
@@ -107,9 +107,9 @@ export const getAllApis = (data) => {
 // @Param data body dbModel.Api true "删除api"
 // @Success 200 {string} json "{"success":true,"data":{},"msg":"删除成功"}"
 // @Router /api/deleteApi [post]
-export const deleteSupplier = (data) => {
+export const deleteSubject = (data) => {
   return service({
-    url: "/supplier/deleteSupplier",
+    url: "/Subject/deleteSubject",
     method: "post",
     data,
   });

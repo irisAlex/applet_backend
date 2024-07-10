@@ -65,7 +65,8 @@ func (menuService *MenuService) getMenuTreeMap(authorityId uint) (treeMap map[st
 	}
 	for _, v := range allMenus {
 		v.Btns = btnMap[v.SysBaseMenu.ID]
-		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
+		str := strconv.FormatInt(v.ParentId, 10)
+		treeMap[str] = append(treeMap[str], v)
 	}
 	return treeMap, err
 }
@@ -151,7 +152,8 @@ func (menuService *MenuService) getBaseMenuTreeMap() (treeMap map[string][]syste
 	treeMap = make(map[string][]system.SysBaseMenu)
 	err = global.GVA_DB.Order("sort").Preload("MenuBtn").Preload("Parameters").Find(&allMenus).Error
 	for _, v := range allMenus {
-		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
+		str := strconv.FormatInt(v.ParentId, 10)
+		treeMap[str] = append(treeMap[str], v)
 	}
 	return treeMap, err
 }
@@ -218,6 +220,7 @@ func (menuService *MenuService) GetMenuAuthority(info *request.GetAuthorityId) (
 }
 
 // UserAuthorityDefaultRouter 用户角色默认路由检查
+//
 //	Author [SliverHorn](https://github.com/SliverHorn)
 func (menuService *MenuService) UserAuthorityDefaultRouter(user *system.SysUser) {
 	var menuIds []string

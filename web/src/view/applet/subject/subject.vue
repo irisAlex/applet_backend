@@ -1,8 +1,4 @@
 <template>
-
-</template>
-<script></script>
-<!-- <template>
     <div>
         <div class="gva-search-box">
             <a-form ref="searchForm" class="ant-advanced-search-form" :model="searchInfo" @finish="onFinish">
@@ -93,13 +89,14 @@ import {
     ExclamationCircleOutlined
 } from '@ant-design/icons-vue';
 import {
-    getProjectList,
-    createProject,
-    getProjectById,
-    updateProject,
-    deleteProject
-} from '@/api/project'
+    getSubjectById,
+    createSubject,
+    getSubjectList,
+    updateSubject,
+    deleteSubject
+} from '@/api/subject'
 import { message, Modal, TableColumnsType } from 'ant-design-vue';
+import { any } from 'core-js/fn/promise';
 const searchInfo = ref({
     parent_id: 0,
     name: '',
@@ -190,8 +187,8 @@ const formState = ref({
     parent_id: 0
 })
 const editApiFunc = async (row: any) => {
-    const res = await getProjectById({ id: row.ID })
-    formState.value = res.data.project
+    const res = await getSubjectById({ id: row.ID })
+    formState.value = res.data.Subject
     console.log(formState.value)
     showModal('edit')
 }
@@ -269,7 +266,7 @@ const tableData = ref([])
 
 // 查询
 const getTableData = async () => {
-    const table = await getProjectList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+    const table = await getSubjectList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
     if (table.code === 0) {
         tableData.value = table.data.list
         total.value = table.data.total
@@ -285,7 +282,7 @@ const handleOk = async () => {
         case 'add':
             {
                 formState.value.parent_id = parent_id.value
-                const res = await createProject(formState.value)
+                const res = await createSubject(formState.value)
                 if (res.code === 0) {
                     message.success('添加成功');
                 }
@@ -295,7 +292,7 @@ const handleOk = async () => {
             break
         case 'edit':
             {
-                const res = await updateProject(formState.value)
+                const res = await updateSubject(formState.value)
                 if (res.code === 0) {
                     message.success('数据更新成功');
                 }
@@ -321,7 +318,7 @@ const deleteApiFunc = async (row: any) => {
         cancelText: '取消',
         onOk() {
             const deleteApi = async () => {
-                const res = await deleteProject(row)
+                const res = await deleteSubject(row)
                 if (res.code === 0) {
                     message.success('数据删除成功');
                     if (tableData.value.length === 1 && page.value > 1) {
@@ -397,4 +394,4 @@ const handleTableChange = (pag: any) => {
 .code-box-demo .ant-slider {
     margin-bottom: 16px;
 }
-</style> -->
+</style>

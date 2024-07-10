@@ -26,7 +26,7 @@
                     <el-input v-model="searchInfo.checkout_name" placeholder="受检物名称" />
                 </el-form-item>
                 <el-form-item label="供应商名称" prop="method" style="width:200px;">
-                    <el-input v-model="searchInfo.supplier" placeholder="供应商名称" />
+                    <el-input v-model="searchInfo.Post" placeholder="供应商名称" />
                 </el-form-item>
                 <el-form-item label="项目名称" prop="project" style="width:200px;">
                     <el-input v-model="searchInfo.project" placeholder="项目名称" />
@@ -43,38 +43,24 @@
             </div>
             <el-table :data="tableData" @sort-change="sortChange" @selection-change="handleSelectionChange">
                 <el-table-column align="left" label="ID" min-width="150" prop="ID" />
-                <el-table-column align="left" label="编号" min-width="150" prop="serialnumber" />
-                <el-table-column align="left" label="部门" min-width="150" prop="department" />
-                <el-table-column align="left" label="类型" min-width="150" prop="mold" />
-                <el-table-column align="left" label="类别" min-width="150" prop="category" />
-                <el-table-column align="left" label="受检物名称" min-width="150" prop="checkout_name" />
-                <el-table-column align="left" label="受检物号" min-width="150" prop="checkout_number" />
-                <el-table-column align="left" label="处理方式" min-width="150" prop="process_mode" />
-                <el-table-column align="left" label="处理过程" min-width="150" prop="process_mode">
-                    <template #default="scope">
-                        <el-progress :text-inside="true" :stroke-width="26"
-                            :percentage="scope.row.a3_step === 9 ? 100 : (scope.row.a3_step * 10)"
-                            status="success"></el-progress>
-                    </template>
-                </el-table-column>
-                <el-table-column align="left" label="当前负责人" min-width="150" prop="" sortable="custom">
-                    <template #default="scope">
-                        <el-tag type="info">{{ findPrincipal(scope.row, scope.row.a3_step) }}</el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column align="left" label="计划时间" min-width="150" prop="checkout_date" sortable="custom">
-                    <template #default="scope">
-                        <i class="el-icon-time"></i>
-                        <span style="margin-left: 10px">{{ formatDate(scope.row.checkout_date) }}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column align="left" label="填表日期" min-width="150" prop="created_at" sortable="custom">
-                    <template #default="scope">
-                        <i class="el-icon-time"></i>
-                        <span style="margin-left: 10px">{{ formatDate(scope.row.created_at) }}</span>
-                    </template>
-                </el-table-column>
+                <el-table-column align="left" label="招考人数" min-width="150" prop="serialnumber" />
+                <el-table-column align="left" label="入围比例" min-width="150" prop="department" />
+                <el-table-column align="left" label="招考年份" min-width="150" prop="mold" />
+                <el-table-column align="left" label="进面分数线" min-width="150" prop="category" />
+                <el-table-column align="left" label="数据来源" min-width="150" prop="checkout_name" />
+                <el-table-column align="left" label="岗位名称" min-width="150" prop="checkout_number" />
+                <el-table-column align="left" label="岗位代码" min-width="150" prop="process_mode" />
+                <el-table-column align="left" label="岗位类别" min-width="150" prop="process_mode" />
+                <el-table-column align="left" label="从事工作" min-width="150" prop="process_mode" />
 
+                <el-table-column align="left" label="单位名称" min-width="150" prop="process_mode" />
+
+                <el-table-column align="left" label="单位序号" min-width="150" prop="process_mode" />
+
+                <el-table-column align="left" label="其他条件" min-width="150" prop="process_mode" />
+
+                <el-table-column align="left" label="职业资格" min-width="150" prop="process_mode">
+                </el-table-column>
                 <el-table-column align="left" fixed="right" label="操作" width="300">
                     <template #default="scope">
                         <el-button icon="download" type="primary" link @click="downExcel(scope.row)">下载</el-button>
@@ -96,103 +82,106 @@
         <!-- issue 确认 -->
         <el-drawer v-model="drawer" :title="dialogTitle" :direction="direction" :before-close="handleClose" :size="ize">
             <div class="block">
-                <el-form ref="apiForm" :model="form" :rules="rules" :inline="true">
+                <el-form ref="apiForm" :model="form" :inline="true">
                     <el-timeline>
                         <el-timeline-item timestamp="考情分析" placement="top">
                             <el-card>
-                                <el-form-item label=" 招考人数:" prop="area" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label=" 招考人数:" prop="enter_number" style="width:50%">
+                                    <el-input v-model="form.enter_number" @input='handleChange(1)'></el-input>
                                 </el-form-item>
 
-                                <el-form-item label="入围比例:" prop="station" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label="入围比例:" prop="enter_ratio" style="width:50%">
+                                    <el-input v-model="form.enter_ratio" @input='handleChange(1)'></el-input>
                                 </el-form-item>
 
-                                <el-form-item label="招考年份:" prop="checkout_name" style="width:50%">
-                                    <el-date-picker v-model="value3" type="year" placeholder="选择年">
+                                <el-form-item label="招考年份:" prop="enter_year" style="width:50%">
+                                    <el-date-picker v-model="form.enter_year" type="year" placeholder="选择年">
                                     </el-date-picker>
                                 </el-form-item>
 
-                                <el-form-item label="进面分数线:" prop="serialnumber" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label="进面分数线:" prop="fractional_line" style="width:50%">
+                                    <el-input v-model="form.fractional_line" @input='handleChange(1)'></el-input>
                                 </el-form-item>
 
-                                <el-form-item label="收据来源:" prop="defect_problem" style="width:50%">
-                                    <span>{{ form.defect_problem }}</span>
+                                <el-form-item label="数据来源:" prop="enter_source" style="width:50%">
+                                    <el-input v-model="form.enter_source" @input='handleChange(1)'></el-input>
                                 </el-form-item>
                             </el-card>
                         </el-timeline-item>
                         <el-timeline-item timestamp="岗位信息" placement="top">
                             <el-card>
-                                <el-form-item label="岗位名称:" prop="area" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label="岗位名称:" prop="post_name" style="width:50%">
+                                    <el-input v-model="form.post_name" @input='handleChange(1)'></el-input>
                                 </el-form-item>
-                                <el-form-item label="岗位代码:" prop="area" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label="岗位代码:" prop="post_code" style="width:50%">
+                                    <el-input v-model="form.post_code" @input='handleChange(1)'></el-input>
                                 </el-form-item>
-                                <el-form-item label="岗位类别:" prop="area" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label="岗位类别:" prop="post_category" style="width:50%">
+                                    <el-input v-model="form.post_category" @input='handleChange(1)'></el-input>
                                 </el-form-item>
-                                <el-form-item label="从事工作:" prop="area" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label="从事工作:" prop="perform_work" style="width:50%">
+                                    <el-input v-model="form.perform_work" @input='handleChange(1)'></el-input>
                                 </el-form-item>
-                                <el-form-item label="单位名称:" prop="area" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label="单位名称:" prop="organization_name" style="width:50%">
+                                    <el-input v-model="form.organization_name" @input='handleChange(1)'></el-input>
                                 </el-form-item>
-                                <el-form-item label="单位序号:" prop="area" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label="单位序号:" prop="organization_code" style="width:50%">
+                                    <el-input v-model="form.organization_code" @input='handleChange(1)'></el-input>
                                 </el-form-item>
                             </el-card>
                         </el-timeline-item>
                         <el-timeline-item timestamp="报考条件" placement="top">
                             <el-card>
-                                <el-form-item label="来源类别:" prop="area" style="width:50%">
-                                    <el-select v-model="searchInfo.mold" placeholder="请选择">
+                                <el-form-item label="来源类别:" prop="source_category" style="width:80%">
+                                    <el-select v-model="form.source_category" placeholder="请选择">
                                         <el-option v-for="item in sourceCategory" :key="item.value" :label="item.label"
                                             :value="item.value">
                                         </el-option>
                                     </el-select>
                                 </el-form-item>
-                                <el-form-item label="学历要求:" prop="area" style="width:50%">
-                                    <el-select v-model="searchInfo.mold" placeholder="请选择">
-                                        <el-option v-for="item in sourceCategory" :key="item.value" :label="item.label"
+                                <el-form-item label="学历要求:" prop="educational_require" style="width:80%">
+                                    <el-select v-model="form.educational_require" placeholder="请选择"
+                                        @change="getSubjectNameList(form.educational_require)">
+                                        <el-option v-for="item in education" :key="item.value" :label="item.label"
                                             :value="item.value">
                                         </el-option>
                                     </el-select>
                                 </el-form-item>
-                                <el-form-item label="专业科目:" prop="area" style="width:50%">
-                                    <el-select v-model="searchInfo.mold" placeholder="请选择">
-                                        <el-option v-for="item in sourceCategory" :key="item.value" :label="item.label"
-                                            :value="item.value">
+                                <el-form-item label="专业科目:" prop="subject" style="width:50%">
+                                    <el-select v-model="form.subject" placeholder="请选择"
+                                        @change="getSubjectCareeNameList(form.subject)">
+                                        <el-option v-for="item in careerList" :key="item.name" :label="item.name"
+                                            :value="item.ID">
                                         </el-option>
                                     </el-select>
                                 </el-form-item>
-                                <el-form-item label="所学专业:" prop="area" style="width:50%">
-                                    <el-select v-model="searchInfo.mold" placeholder="请选择">
-                                        <el-option v-for="item in sourceCategory" :key="item.value" :label="item.label"
-                                            :value="item.value">
+                                <el-form-item label="所学专业:" prop="career" style="width:50%">
+                                    <el-select v-model="form.career" placeholder="请选择"
+                                        @change="getSpecialtyNameList(form.career)">
+                                        <el-option v-for="item in specialtyList" :key="item.name" :label="item.name"
+                                            :value="item.ID">
                                         </el-option>
                                     </el-select>
                                 </el-form-item>
-                                <el-form-item label="专业名称:" prop="area" style="width:50%">
-                                    <el-select v-model="searchInfo.mold" placeholder="请选择">
-                                        <el-option v-for="item in sourceCategory" :key="item.value" :label="item.label"
-                                            :value="item.value">
+                                <el-form-item label="专业名称:" prop="specialty" style="width:50%">
+                                    <el-select v-model="form.specialty" placeholder="请选择">
+                                        <el-option v-for="item in specialtyNameList" :key="item.name" :label="item.name"
+                                            :value="item.name">
                                         </el-option>
                                     </el-select>
                                 </el-form-item>
-                                <el-form-item label="学位要求:" prop="area" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label="学位要求:" prop="degree_require" style="width:50%">
+                                    <el-input v-model="form.degree_require" @input='handleChange(1)'></el-input>
                                 </el-form-item>
-                                <el-form-item label="职称要求:" prop="area" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label="职称要求:" prop="qualification" style="width:50%">
+                                    <el-input v-model="form.qualification" @input='handleChange(1)'></el-input>
                                 </el-form-item>
-                                <el-form-item label="职业资格:" prop="area" style="width:50%">
-                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                <el-form-item label="职业资格:" prop="title_require" style="width:50%">
+                                    <el-input v-model="form.title_require" @input='handleChange(1)'></el-input>
                                 </el-form-item>
-                                <el-form-item label="其他条件:" prop="area" style="width:50%;">
-                                    <el-input type="textarea" placeholder="请输入内容" v-model="form.craft_view"
-                                        maxlength="50" show-word-limit :rows="10" />
+                                <el-form-item label="其他条件:" prop="other" style="width:50%;">
+                                    <el-input type="textarea" placeholder="请输入内容" v-model="form.other" maxlength="50"
+                                        show-word-limit :rows="10" />
                                 </el-form-item>
                             </el-card>
                         </el-timeline-item>
@@ -215,37 +204,13 @@
 </template>
 <script setup>
 import {
-    createSupplierApi,
-    getSupplierList,
-    getSupplierById,
-    deleteSupplier,
-    updateSupplier
-
-} from '@/api/supplier'
+    getPostList,
+    getSubjectByEId,
+    getSubjectByEName
+} from '@/api/post'
 import { toSQLLine } from '@/utils/stringFun'
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-const quillEditor = ref();
-
-const editorOptions = reactive({
-    modules: {
-        toolbar: [  // 工具栏配置
-            ['bold', 'italic', 'underline', 'strike'],  // 粗体、斜体、下划线、删除线
-            [{ 'header': 1 }, { 'header': 2 }],  // 标题1和标题2
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],  // 有序列表和无序列表
-            [{ 'script': 'sub' }, { 'script': 'super' }],  // 上标和下标
-            [{ 'indent': '-1' }, { 'indent': '+1' }],  // 缩进
-            [{ 'direction': 'rtl' }],  // 文字方向
-            [{ 'size': ['small', false, 'large', 'huge'] }],  // 字号
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],  // 标题等级
-            [{ 'color': [] }, { 'background': [] }],  // 字体颜色和背景色
-            [{ 'font': [] }],  // 字体
-            [{ 'align': [] }],  // 对齐方式
-            ['clean']  // 清除格式
-        ]
-    }
-})
-
 defineOptions({
     name: 'Setting',
 })
@@ -293,29 +258,19 @@ const showSettingDrawer = async (row) => {
     }
 }
 const setp = ref(0)
-const isPass = ref(0)
-const imgBase64 = ref('')
-const path = import.meta.env.VITE_BASE_PATH + ':' + import.meta.env.VITE_SERVER_PORT + '/'
 
 const handleChange = (ste) => {
     setp.value = ste
 }
 const initDraw = () => {
 }
-
-const apis = ref([])
-const departmentList = ref([])
-const genreList1 = ref([])
-const supplierList = ref([])
 const projectList = ref([])
-const fileList = ref([])
 const form = ref({
     enter_number: "",
     enter_year: "",
     enter_subject: "",
     enter_source: "",
     enter_ratio: "",
-    grade: "",
     post_name: "",
     post_code: "",
     workplace: "",
@@ -329,32 +284,12 @@ const form = ref({
     career: "",
     title_require: "",
     qualification: "",
-    other: ""
+    other: "",
+    specialty: "",
+    subject: "",
+    fractional_line
 })
 
-
-const AuthorityUsers = ref([])
-//获取部门用户
-const departmentUinfo = async (Authority) => {
-    const table = await getUserAuthorityList({ page: page.value, pageSize: pageSize.value, authority_id: Authority, ...searchInfo.value })
-    if (table.code === 0) {
-        console.log(table.data.list)
-
-        AuthorityUsers.value = table.data.list
-    }
-}
-
-
-
-const findPrincipal = (row, step) => {
-    const setting = ref([])
-    if (row.a3_setting !== '') {
-        setting.value = JSON.parse(row.a3_setting)
-        let name = setting.value.find(item => item.issue_number == step)
-        return name.principal
-    }
-    return '暂无配置负责人'
-}
 
 const sourceCategory = ref([
     {
@@ -371,18 +306,24 @@ const sourceCategory = ref([
     }
 ])
 
-const rules = ref({
-    path: [{ required: true, message: '请输入api路径', trigger: 'blur' }],
-    apiGroup: [
-        { required: true, message: '请输入组名称', trigger: 'blur' }
-    ],
-    method: [
-        { required: true, message: '请选择请求方式', trigger: 'blur' }
-    ],
-    description: [
-        { required: true, message: '请输入api介绍', trigger: 'blur' }
-    ]
-})
+const education = ref([
+    {
+        value: '本科',
+        label: '本科'
+    },
+    {
+        value: '硕士',
+        label: '硕士',
+    },
+    {
+        value: '博士',
+        label: '博士',
+    },
+    {
+        value: '专科',
+        label: '专科',
+    }
+])
 
 const page = ref(1)
 const total = ref(0)
@@ -393,36 +334,7 @@ const onReset = () => {
     searchInfo.value = {}
 }
 
-const handleSuccess = (resp) => {
-    if (resp.code === 0) {
-        ElMessage({
-            type: 'success',
-            message: '图片上传成功',
-            showClose: true
-        })
-
-        fileList.value.push({ name: resp.data.file.name, url: resp.data.file.url })
-        form.value.photograph = JSON.stringify(fileList.value)
-        return
-    }
-    ElMessage({
-        type: 'error',
-        message: '图片上传失败',
-        showClose: true
-    })
-
-};
-
-const handleRemove = (file, fileList) => {
-    // 处理删除文件的逻辑，例如从文件列表中删除文件
-    const index = fileList.indexOf(file);
-    if (index !== -1) {
-        fileList.splice(index, 1);
-    }
-    form.value.photograph = JSON.stringify(fileList.value)
-};
-
-
+const careerName = ref()
 // 搜索
 const onSubmit = () => {
     page.value = 1
@@ -453,45 +365,45 @@ const sortChange = ({ prop, order }) => {
     getTableData()
 }
 
+const specialtyList = ref([])
+// 科目列表
+const getSubjectCareeNameList = async (id) => {
+    const table = await getSubjectByEId({ id: id })
+    console.log(table, careerName)
+    if (table.code === 0) {
+        specialtyList.value = table.data.subject
+    }
+}
+
+const specialtyNameList = ref([])
+// 科目列表
+const getSpecialtyNameList = async (id) => {
+    const table = await getSubjectByEId({ id: id })
+    console.log(table, careerName)
+    if (table.code === 0) {
+        specialtyNameList.value = table.data.subject
+    }
+}
+
+const careerList = ref([])
+// 科目列表
+const getSubjectNameList = async (name) => {
+    const table = await getSubjectByEName({ name: name })
+    console.log(table)
+    if (table.code === 0) {
+        careerList.value = table.data.subject
+    }
+    console.log(careerList.value)
+}
 // 类别列表
-const genreList = async () => {
-    const table = await getGenreList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+const Post = async () => {
+    const table = await getPostList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
     if (table.code === 0) {
-        genreList1.value = table.data.list
+        PostList.value = table.data.post
     }
 }
 
-
-// 类别列表
-const supplier = async () => {
-    const table = await getSupplierList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
-    if (table.code === 0) {
-        supplierList.value = table.data.list
-    }
-}
-
-
-// 类别列表
-const project = async () => {
-    const table = await getProjectList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
-    if (table.code === 0) {
-        projectList.value = table.data.list
-    }
-}
-
-
-// 查询
-const getTableData = async () => {
-    searchInfo.value.process_mode = "A3"
-    const table = await getManageList({ page: page.value, pageSize: pageSize.value, orderKey: 'id', desc: true, ...searchInfo.value })
-    if (table.code === 0) {
-        tableData.value = table.data.list
-        total.value = table.data.total
-        page.value = table.data.page
-        pageSize.value = table.data.pageSize
-    }
-}
-
+// getPostList()
 
 // 批量操作
 const handleSelectionChange = (val) => {
@@ -508,7 +420,6 @@ const initForm = () => {
         enter_subject: "",
         enter_source: "",
         enter_ratio: "",
-        grade: "",
         post_name: "",
         post_code: "",
         workplace: "",
@@ -522,7 +433,10 @@ const initForm = () => {
         career: "",
         title_require: "",
         qualification: "",
-        other: ""
+        other: "",
+        specialty: "",
+        subject: "",
+        fractional_line: ""
     }
 }
 

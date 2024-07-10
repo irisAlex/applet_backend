@@ -15,10 +15,13 @@ func (s *SubjectRouter) InitSubjectRouter(Router *gin.RouterGroup) {
 
 	SubjectRouterApi := v1.ApiGroupApp.AppletApiGroup.SubjectApi
 	{
-		SubjectApiRouter.POST("createSubjectApi", SubjectRouterApi.CreateSubjectApi) // 创建Api
-		SubjectApiRouter.POST("deleteSubject", SubjectRouterApi.DeleteSubject)       // 删除Api
-		SubjectApiRouter.POST("getSubjectById", SubjectRouterApi.GetSubjectById)     // 获取单条Api消息
-		SubjectApiRouter.POST("updateSubject", SubjectRouterApi.UpdateSubject)       // 更新api
+		SubjectApiRouter.POST("createSubjectApi", SubjectRouterApi.CreateSubjectApi)   // 创建Api
+		SubjectApiRouter.POST("deleteSubject", SubjectRouterApi.DeleteSubject)         // 删除Api
+		SubjectApiRouter.POST("getSubjectById", SubjectRouterApi.GetSubjectById)       // 获取单条Api消息
+		SubjectApiRouter.POST("updateSubject", SubjectRouterApi.UpdateSubject)         // 更新api
+		SubjectApiRouter.POST("getSubjectByEID", SubjectRouterApi.GetSubjectByEId)     // 更新api
+		SubjectApiRouter.POST("getSubjectByEName", SubjectRouterApi.GetSubjectByEName) // 更新api
+
 		// SubjectApiRouter.DELETE("deleteApisByIds", SubjectRouterApi.DeleteApisByIds) // 删除选中api
 	}
 	{

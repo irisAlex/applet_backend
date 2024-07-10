@@ -16,9 +16,14 @@ import auth from '@/directive/auth'
 import { store } from '@/pinia'
 import App from './App.vue'
 import { initDom } from './utils/positionToCode'
-
+import Antd from 'ant-design-vue';
+import 'ant-design-vue/dist/reset.css';
 initDom()
 
+import Nprogress from 'nprogress'
+import 'nprogress/nprogress.css'
+Nprogress.configure({ showSpinner: false, ease: 'ease', speed: 500 })
+Nprogress.start()
 const app = createApp(App)
 app.config.productionTip = false
 
@@ -27,5 +32,6 @@ app
     .use(store)
     .use(auth)
     .use(router)
+    .use(Antd)
     .mount('#app')
 export default app

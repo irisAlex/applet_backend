@@ -11,7 +11,7 @@ type Post struct {
 	Enter_Subject       string `json:"enter_subject" gorm:"comment:类别"`
 	Enter_Source        string `json:"enter_source" gorm:"comment:类别"`
 	Enter_Ratio         string `json:"enter_ratio" gorm:"comment:类别"`
-	Grade               string `json:"grade" gorm:"comment:类别"`
+	Subject             string `json:"subject" gorm:"comment:类别"`
 	Post_Name           string `json:"post_name" gorm:"comment:类别"`
 	Post_Code           string `json:"post_code" gorm:"comment:类别"`
 	Workplace           string `json:"workplace" gorm:"comment:类别"`
@@ -26,6 +26,8 @@ type Post struct {
 	Title_Require       string `json:"title_require" gorm:"comment:类别"`
 	Qualification       string `json:"qualification" gorm:"comment:类别"`
 	Other               string `json:"other" gorm:"comment:类别"`
+	Specialty           string `json:"specialty" gorm:"comment:类别"`
+	Fractional_Line     string `json:"fractional_line" gorm:"comment:类别"`
 }
 
 func (Post) TableName() string {

@@ -138,7 +138,12 @@ func (apiService *SubjectApiService) UpdateSubject(api applet.Subject) (err erro
 	return nil
 }
 
-func (apiService *SubjectApiService) GetSubjectByEID(id int) (api []applet.Post, err error) {
-	err = global.GVA_DB.Where("id = ? and parent_id=? ", id, id).Find(&api).Error
+func (apiService *SubjectApiService) GetSubjectByEID(id int) (api []applet.Subject, err error) {
+	err = global.GVA_DB.Where("parent_id=? ", id).Find(&api).Error
+	return
+}
+
+func (apiService *SubjectApiService) GetSubjectByEName(name string) (api []applet.Subject, err error) {
+	err = global.GVA_DB.Where("parent_id=? and education_level_name=?", 0, name).Find(&api).Error
 	return
 }
