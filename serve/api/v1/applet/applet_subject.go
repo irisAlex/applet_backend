@@ -84,6 +84,27 @@ func (s *SubjectApi) GetSubjectById(c *gin.Context) {
 	response.OkWithDetailed(appletep.SubjectResponse{Applet: api}, "获取成功", c)
 }
 
+func (s *SubjectApi) GetSubjectByEId(c *gin.Context) {
+	var idInfo request.GetById
+	err := c.ShouldBindJSON(&idInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	err = utils.Verify(idInfo, utils.IdVerify)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	api, err := SubjectService.GetSubjectByEID(idInfo.ID)
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(appletep.SubjectResponse{Applet: api}, "获取成功", c)
+}
+
 func (s *SubjectApi) DeleteSubject(c *gin.Context) {
 	var api applet.Subject
 	err := c.ShouldBindJSON(&api)

@@ -1,4 +1,8 @@
 <template>
+
+</template>
+<script></script>
+<!-- <template>
     <div>
         <div class="gva-search-box">
             <a-form ref="searchForm" class="ant-advanced-search-form" :model="searchInfo" @finish="onFinish">
@@ -393,4 +397,4 @@ const handleTableChange = (pag: any) => {
 .code-box-demo .ant-slider {
     margin-bottom: 16px;
 }
-</style>
+</style> -->

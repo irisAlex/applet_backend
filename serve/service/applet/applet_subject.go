@@ -138,24 +138,7 @@ func (apiService *SubjectApiService) UpdateSubject(api applet.Subject) (err erro
 	return nil
 }
 
-// //@author: [piexlmax](https://github.com/piexlmax)
-// //@function: DeleteApis
-// //@description: 删除选中API
-// //@param: apis []model.SysApi
-// //@return: err error
-
-// func (apiService *SubjectApiService) DeleteApisByIds(ids request.IdsReq) (err error) {
-// 	var apis []system.SysApi
-// 	err = global.GVA_DB.Find(&apis, "id in ?", ids.Ids).Delete(&apis).Error
-// 	if err != nil {
-// 		return err
-// 	} else {
-// 		for _, sysApi := range apis {
-// 			CasbinServiceApp.ClearCasbin(1, sysApi.Path, sysApi.Method)
-// 		}
-// 		if err != nil {
-// 			return err
-// 		}
-// 	}
-// 	return err
-// }
+func (apiService *SubjectApiService) GetSubjectByEID(id int) (api []applet.Post, err error) {
+	err = global.GVA_DB.Where("id = ? and parent_id=? ", id, id).Find(&api).Error
+	return
+}

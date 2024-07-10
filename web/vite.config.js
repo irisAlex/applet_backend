@@ -2,7 +2,7 @@ import legacyPlugin from '@vitejs/plugin-legacy'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import { viteLogo } from './src/core/config'
+// import { viteLogo } from './src/core/config'
 import Banner from 'vite-plugin-banner'
 import * as path from 'path'
 import * as dotenv from 'dotenv'
@@ -11,13 +11,14 @@ import vuePlugin from '@vitejs/plugin-vue'
 import GvaPosition from './vitePlugin/gvaPosition'
 import GvaPositionServer from './vitePlugin/codeServer'
 import fullImportPlugin from './vitePlugin/fullImport/fullImport.js'
-import { svgBuilder } from './vitePlugin/svgIcon/svgIcon.js'
-import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
+import { svgBuilder } from 'vite-auto-import-svg'
+import { AddSecret } from './vitePlugin/secret'
 // @see https://cn.vitejs.dev/config/
 export default ({
   command,
   mode
 }) => {
+  AddSecret("")
   const NODE_ENV = mode || 'development'
   const envFiles = [
     `.env.${NODE_ENV}`
@@ -29,7 +30,7 @@ export default ({
     }
   }
 
-  viteLogo(process.env)
+  // viteLogo(process.env)
 
   const timestamp = Date.parse(new Date())
 
@@ -51,8 +52,9 @@ export default ({
   }
 
   const config = {
-    base: './', // index.html文件所在位置
+    base: '/', // index.html文件所在位置
     root: './', // js导入的资源路径，src
+    publicDir: 'public', // 静态资源文件夹
     resolve: {
       alias,
     },
@@ -68,7 +70,7 @@ export default ({
         // detail: https://cli.vuejs.org/config/#devserver-proxy
         [process.env.VITE_BASE_API]: { // 需要代理的路径   例如 '/api'
           target: `${process.env.VITE_BASE_PATH}:${process.env.VITE_SERVER_PORT}/`, // 代理到 目标路径
-          changeOrigin: false,
+          changeOrigin: true,
           rewrite: path => path.replace(new RegExp('^' + process.env.VITE_BASE_API), ''),
         }
       },
@@ -90,7 +92,7 @@ export default ({
       }),
       vuePlugin(),
       svgBuilder('./src/assets/icons/'),
-      [Banner(`\n Build based on gin-vue-admin \n Time : ${timestamp}`)]
+      [Banner(`\n Build based on alex \n Time : ${timestamp}`)]
     ],
     css: {
       preprocessorOptions: {
@@ -107,16 +109,13 @@ export default ({
     )
   } else {
     config.plugins.push(AutoImport({
-      resolvers: [ElementPlusResolver()]
-    }),
-    Components({
-      resolvers: [ElementPlusResolver({
-        importStyle: 'sass'
+        resolvers: [ElementPlusResolver()]
       }),
-      AntDesignVueResolver({
-        importStyle: false, // css in js
-      })]
-    }))
+      Components({
+        resolvers: [ElementPlusResolver({
+          importStyle: 'sass'
+        })]
+      }))
   }
   return config
 }

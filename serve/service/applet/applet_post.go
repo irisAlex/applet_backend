@@ -86,8 +86,3 @@ func (apiService *PostService) UpdatePost(api applet.Post) (err error) {
 	}
 	return nil
 }
-
-func (apiService *PostService) GetSubjectByEID(id int) (api applet.Post, err error) {
-	err = global.GVA_DB.Where("id = ? and parent_id=? ", id, id).First(&api).Error
-	return
-}

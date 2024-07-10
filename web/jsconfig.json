@@ -3,13 +3,8 @@
       "baseUrl": "./",
       "paths": {
         "@/*": ["src/*"],
-      },
-      "module": "ESNext",
-      "moduleResolution": "Node",
-      "types": [
-        "vite/client"
-      ]
+      }
     },
     "exclude": ["node_modules", "dist"],
-    "include": ["src/**/*"]
+    "include": ["src/**/*", "openDocument.js"]
   }

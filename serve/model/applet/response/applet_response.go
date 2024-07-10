@@ -3,7 +3,7 @@ package response
 import "github.com/flipped-aurora/gin-vue-admin/server/model/applet"
 
 type SubjectResponse struct {
-	Applet applet.Subject `json:"subject"`
+	Applet interface{} `json:"subject"`
 }
 
 type PostResponse struct {

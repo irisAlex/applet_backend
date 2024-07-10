@@ -4,8 +4,6 @@ import { useUserStore } from '@/pinia/modules/user'
 import router from '@/router/index'
 import { ElLoading } from 'element-plus'
 
-
-
 const service = axios.create({
   baseURL: import.meta.env.VITE_BASE_API,
   timeout: 99999

@@ -215,20 +215,16 @@
 </template>
 <script setup>
 import {
-    getAuthorityList,
-    getGenreList,
+    createSupplierApi,
     getSupplierList,
-    getProjectList,
-    updateManage,
-    getManageById,
-    getManageList,
-    getUserAuthorityList,
-} from '@/api/manage.js'
-import { toSQLLine, formatDate } from '@/utils/stringFun'
+    getSupplierById,
+    deleteSupplier,
+    updateSupplier
+
+} from '@/api/supplier'
+import { toSQLLine } from '@/utils/stringFun'
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import { strToJson } from '@/utils/format'
-import { useUserStore } from '@/pinia/modules/user'
 const quillEditor = ref();
 
 const editorOptions = reactive({
@@ -457,16 +453,6 @@ const sortChange = ({ prop, order }) => {
     getTableData()
 }
 
-// 部门列表
-const department = async () => {
-    const table = await getAuthorityList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
-    if (table.code === 0) {
-        departmentList.value = table.data.list
-    }
-}
-
-department()
-
 // 类别列表
 const genreList = async () => {
     const table = await getGenreList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
@@ -573,23 +559,28 @@ const enterDialog = async () => {
         right: 0
     }
 
-    position: fixed;
-    right: -20px;
-    bottom: 15%;
-    height: 40px;
-    width: 800px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-    color: #fff;
-    border-radius: 4px 0 0 4px;
-    cursor: pointer;
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 10%);
+    & {
+        position: fixed;
+        right: -20px;
+        bottom: 15%;
+        height: 40px;
+        width: 800px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        color: #fff;
+        border-radius: 4px 0 0 4px;
+        cursor: pointer;
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 10%);
+    }
+
 }
 
 .setting_body {
-    padding: 20px;
+    & {
+        padding: 20px;
+    }
 
     .setting_card {
         margin-bottom: 20px;
@@ -612,11 +603,14 @@ const enterDialog = async () => {
         }
 
         .item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            margin-right: 20px;
+            & {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                margin-right: 20px;
+            }
+
 
             .item-top {
                 position: relative;
