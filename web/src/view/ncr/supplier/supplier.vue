@@ -1,238 +1,503 @@
 <template>
     <div>
         <div class="gva-search-box">
-            <a-form ref="searchForm" class="ant-advanced-search-form" :model="searchInfo" @finish="onFinish">
-                <a-row :gutter="24">
-                    <a-col :span="8">
-                        <a-form-item label="产品名称">
-                            <a-input v-model:value="searchInfo.product" placeholder="产品名称"></a-input>
-                        </a-form-item>
-                    </a-col>
-                    <a-col :span="8">
-                        <a-form-item label="供应商地址">
-                            <a-input v-model:value="searchInfo.addr" placeholder="供应商地址"></a-input>
-                        </a-form-item>
-                    </a-col>
-                    <a-col :span="8">
-                        <a-form-item label="供应商名称">
-                            <a-input v-model:value="searchInfo.name" placeholder="供应商名称"></a-input>
-                        </a-form-item>
-                    </a-col>
-                </a-row>
-                <a-row>
-                    <a-col :span="24" style="text-align: left;margin-bottom:20px;">
-                        <a-button type="primary" html-type="submit" :icon="h(SearchOutlined)">
-                            查询</a-button>
-                        <a-button style="margin: 0 8px" @click="onReset" :icon="h(SyncOutlined)">重置</a-button>
-                    </a-col>
-                </a-row>
-            </a-form>
+            <el-form ref="searchForm" :inline="true" :model="searchInfo">
+                <el-form-item label="部门" style="width:200px;" prop="method">
+                    <el-select v-model="searchInfo.department" placeholder="选择部门">
+                        <el-option v-for="item in departmentList" :key="item.authorityId" :label="item.authorityName"
+                            :value="item.authorityName">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="类型" style="width:200px;" prop="method">
+                    <el-select v-model="searchInfo.mold" placeholder="请选择">
+                        <el-option v-for="item in sourceCategory" :key="item.value" :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="类别" prop="method" style="width:200px;">
+                    <el-select v-model="searchInfo.category" placeholder="请选择">
+                        <el-option v-for="item in genreList1" :key="item.name" :label="item.genre" :value="item.genre">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="受检物名称" prop="method" style="width:200px;">
+                    <el-input v-model="searchInfo.checkout_name" placeholder="受检物名称" />
+                </el-form-item>
+                <el-form-item label="供应商名称" prop="method" style="width:200px;">
+                    <el-input v-model="searchInfo.supplier" placeholder="供应商名称" />
+                </el-form-item>
+                <el-form-item label="项目名称" prop="project" style="width:200px;">
+                    <el-input v-model="searchInfo.project" placeholder="项目名称" />
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
+                    <el-button icon="refresh" @click="onReset">重置</el-button>
+                </el-form-item>
+            </el-form>
         </div>
-
         <div class="gva-table-box">
             <div class="gva-btn-list">
-                <a-button type="primary" @click="showModal('add')" :icon="h(PlusOutlined)">新增</a-button>
+                <el-button type="primary" icon="plus" @click="openDialog('setting')">新增</el-button>
             </div>
-            <a-table :columns="columns" :data-source="tableData" :scroll="{ x: 1500 }" :pagination="pagination"
-                @change="handleTableChange">
-                <template #bodyCell="{ column, record }">
-                    <template v-if="column.key === 'operation'">
-                        <a-button :icon="h(EditOutlined)" type="link" @click="editApiFunc(record)">修改</a-button>
-                        <a-button :icon="h(DeleteOutlined)" type="link" @click="deleteApiFunc(record)">删除</a-button>
+            <el-table :data="tableData" @sort-change="sortChange" @selection-change="handleSelectionChange">
+                <el-table-column align="left" label="ID" min-width="150" prop="ID" />
+                <el-table-column align="left" label="编号" min-width="150" prop="serialnumber" />
+                <el-table-column align="left" label="部门" min-width="150" prop="department" />
+                <el-table-column align="left" label="类型" min-width="150" prop="mold" />
+                <el-table-column align="left" label="类别" min-width="150" prop="category" />
+                <el-table-column align="left" label="受检物名称" min-width="150" prop="checkout_name" />
+                <el-table-column align="left" label="受检物号" min-width="150" prop="checkout_number" />
+                <el-table-column align="left" label="处理方式" min-width="150" prop="process_mode" />
+                <el-table-column align="left" label="处理过程" min-width="150" prop="process_mode">
+                    <template #default="scope">
+                        <el-progress :text-inside="true" :stroke-width="26"
+                            :percentage="scope.row.a3_step === 9 ? 100 : (scope.row.a3_step * 10)"
+                            status="success"></el-progress>
                     </template>
-                </template>
-            </a-table>
+                </el-table-column>
+                <el-table-column align="left" label="当前负责人" min-width="150" prop="" sortable="custom">
+                    <template #default="scope">
+                        <el-tag type="info">{{ findPrincipal(scope.row, scope.row.a3_step) }}</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column align="left" label="计划时间" min-width="150" prop="checkout_date" sortable="custom">
+                    <template #default="scope">
+                        <i class="el-icon-time"></i>
+                        <span style="margin-left: 10px">{{ formatDate(scope.row.checkout_date) }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column align="left" label="填表日期" min-width="150" prop="created_at" sortable="custom">
+                    <template #default="scope">
+                        <i class="el-icon-time"></i>
+                        <span style="margin-left: 10px">{{ formatDate(scope.row.created_at) }}</span>
+                    </template>
+                </el-table-column>
+
+                <el-table-column align="left" fixed="right" label="操作" width="300">
+                    <template #default="scope">
+                        <el-button icon="download" type="primary" link @click="downExcel(scope.row)">下载</el-button>
+                        <el-button type="primary" icon="setting" link @click="openDialog(scope.row, 'setting')">
+                            配置
+                        </el-button>
+                        <el-button icon="edit" type="primary" link
+                            @click="openDialog(scope.row, 'report')">填写报告</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="gva-pagination">
+                <el-pagination :current-page="page" :page-size="pageSize" :page-sizes="[10, 30, 50, 100]" :total="total"
+                    layout="total, sizes, prev, pager, next, jumper" @current-change="handleCurrentChange"
+                    @size-change="handleSizeChange" />
+            </div>
+
         </div>
-        <div>
-            <a-modal ref="modalRef" v-model:open="open" :wrap-style="{ overflow: 'hidden' }" @ok="handleOk"
-                cancelText="取消" okText="确定" @cancel="Cancel">
-                <a-form ref="formRef" :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
-                    <a-form-item ref="name" label="供应商名称">
-                        <a-input v-model:value="formState.name" />
-                    </a-form-item>
-                    <a-form-item ref="addr" label="供应商地址">
-                        <a-input v-model:value="formState.addr" />
-                    </a-form-item>
-                    <a-form-item ref="product" label="供货产品名称">
-                        <a-input v-model:value="formState.product" />
-                    </a-form-item>
-                    <a-form-item ref="contacts" label="联系人">
-                        <a-input v-model:value="formState.contacts" />
-                    </a-form-item>
-                    <a-form-item ref="phone" label="联系电话">
-                        <a-input v-model:value="formState.phone" />
-                    </a-form-item>
-                    <a-form-item ref="email" label="email">
-                        <a-input v-model:value="formState.email" />
-                    </a-form-item>
-                </a-form>
-                <template #title>
-                    <div ref="modalTitleRef" style="width: 100%; cursor: move">{{ title }}</div>
-                </template>
-                <template #modalRender="{ originVNode }">
-                    <div :style="transformStyle">
-                        <component :is="originVNode" />
-                    </div>
-                </template>
-            </a-modal>
-        </div>
+        <!-- issue 确认 -->
+        <el-drawer v-model="drawer" :title="dialogTitle" :direction="direction" :before-close="handleClose" :size="ize">
+            <div class="block">
+                <el-form ref="apiForm" :model="form" :rules="rules" :inline="true">
+                    <el-timeline>
+                        <el-timeline-item timestamp="考情分析" placement="top">
+                            <el-card>
+                                <el-form-item label=" 招考人数:" prop="area" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+
+                                <el-form-item label="入围比例:" prop="station" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+
+                                <el-form-item label="招考年份:" prop="checkout_name" style="width:50%">
+                                    <el-date-picker v-model="value3" type="year" placeholder="选择年">
+                                    </el-date-picker>
+                                </el-form-item>
+
+                                <el-form-item label="进面分数线:" prop="serialnumber" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+
+                                <el-form-item label="收据来源:" prop="defect_problem" style="width:50%">
+                                    <span>{{ form.defect_problem }}</span>
+                                </el-form-item>
+                            </el-card>
+                        </el-timeline-item>
+                        <el-timeline-item timestamp="岗位信息" placement="top">
+                            <el-card>
+                                <el-form-item label="岗位名称:" prop="area" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+                                <el-form-item label="岗位代码:" prop="area" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+                                <el-form-item label="岗位类别:" prop="area" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+                                <el-form-item label="从事工作:" prop="area" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+                                <el-form-item label="单位名称:" prop="area" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+                                <el-form-item label="单位序号:" prop="area" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+                            </el-card>
+                        </el-timeline-item>
+                        <el-timeline-item timestamp="报考条件" placement="top">
+                            <el-card>
+                                <el-form-item label="来源类别:" prop="area" style="width:50%">
+                                    <el-select v-model="searchInfo.mold" placeholder="请选择">
+                                        <el-option v-for="item in sourceCategory" :key="item.value" :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="学历要求:" prop="area" style="width:50%">
+                                    <el-select v-model="searchInfo.mold" placeholder="请选择">
+                                        <el-option v-for="item in sourceCategory" :key="item.value" :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="专业科目:" prop="area" style="width:50%">
+                                    <el-select v-model="searchInfo.mold" placeholder="请选择">
+                                        <el-option v-for="item in sourceCategory" :key="item.value" :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="所学专业:" prop="area" style="width:50%">
+                                    <el-select v-model="searchInfo.mold" placeholder="请选择">
+                                        <el-option v-for="item in sourceCategory" :key="item.value" :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="专业名称:" prop="area" style="width:50%">
+                                    <el-select v-model="searchInfo.mold" placeholder="请选择">
+                                        <el-option v-for="item in sourceCategory" :key="item.value" :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="学位要求:" prop="area" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+                                <el-form-item label="职称要求:" prop="area" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+                                <el-form-item label="职业资格:" prop="area" style="width:50%">
+                                    <el-input v-model="form.a3_team_member" @input='handleChange(1)'></el-input>
+                                </el-form-item>
+                                <el-form-item label="其他条件:" prop="area" style="width:50%;">
+                                    <el-input type="textarea" placeholder="请输入内容" v-model="form.craft_view"
+                                        maxlength="50" show-word-limit :rows="10" />
+                                </el-form-item>
+                            </el-card>
+                        </el-timeline-item>
+                        <el-timeline-item timestamp=" 上岸课程" placement="top">
+                            <el-card>
+                                视频
+                            </el-card>
+                        </el-timeline-item>
+                    </el-timeline>
+                </el-form>
+            </div>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="handleClose">取 消</el-button>
+                    <el-button type="primary" @click="enterDialog">确 定</el-button>
+                </div>
+            </template>
+        </el-drawer>
     </div>
 </template>
-<script lang='ts' setup>
-import { ref, computed, watch, watchEffect, h, createVNode } from 'vue';
-import { useDraggable } from '@vueuse/core';
+<script setup>
 import {
-    SearchOutlined,
-    SyncOutlined,
-    PlusOutlined,
-    EditOutlined,
-    DeleteOutlined,
-    ExclamationCircleOutlined
-} from '@ant-design/icons-vue';
-import {
-    createSupplierApi,
+    getAuthorityList,
+    getGenreList,
     getSupplierList,
-    getSupplierById,
-    deleteSupplier,
-    updateSupplier
-} from '@/api/supplier'
-import { message, Modal, TableColumnsType } from 'ant-design-vue';
-const searchInfo = ref({
-    product: '',
-    addr: '',
-    name: '',
-    email: '',
-    phone: '',
-    contacts: ''
+    getProjectList,
+    updateManage,
+    getManageById,
+    getManageList,
+    getUserAuthorityList,
+} from '@/api/manage.js'
+import { toSQLLine, formatDate } from '@/utils/stringFun'
+import { ref, reactive } from 'vue'
+import { ElMessage } from 'element-plus'
+import { strToJson } from '@/utils/format'
+import { useUserStore } from '@/pinia/modules/user'
+const quillEditor = ref();
+
+const editorOptions = reactive({
+    modules: {
+        toolbar: [  // 工具栏配置
+            ['bold', 'italic', 'underline', 'strike'],  // 粗体、斜体、下划线、删除线
+            [{ 'header': 1 }, { 'header': 2 }],  // 标题1和标题2
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],  // 有序列表和无序列表
+            [{ 'script': 'sub' }, { 'script': 'super' }],  // 上标和下标
+            [{ 'indent': '-1' }, { 'indent': '+1' }],  // 缩进
+            [{ 'direction': 'rtl' }],  // 文字方向
+            [{ 'size': ['small', false, 'large', 'huge'] }],  // 字号
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],  // 标题等级
+            [{ 'color': [] }, { 'background': [] }],  // 字体颜色和背景色
+            [{ 'font': [] }],  // 字体
+            [{ 'align': [] }],  // 对齐方式
+            ['clean']  // 清除格式
+        ]
+    }
 })
-const labelCol = { span: 5 };
-const wrapperCol = { span: 13 };
-const columns: TableColumnsType = [
-    { title: 'ID', width: 100, dataIndex: 'ID', key: 'name' },
-    { title: '供应商名称', width: 100, dataIndex: 'name', key: 'age' },
-    { title: '供应商地址', dataIndex: 'addr', key: 'addr', width: 150 },
-    { title: '供货产品名称', dataIndex: 'addr', key: 'addr', width: 150 },
-    { title: '联系人', dataIndex: 'contacts', key: 'contacts', width: 150 },
-    { title: '联系电话', dataIndex: 'phone', key: 'phone', width: 150 },
-    { title: 'Email', dataIndex: 'email', key: 'email', width: 150 },
-    {
-        title: '操作',
-        key: 'operation',
-        fixed: 'right',
-        width: 150,
-    },
-];
-const searchForm = ref()
-const title = ref('添加供应商')
-const open = ref(false);
-const modalTitleRef = ref(null);
-const type = ref()
-const showModal = (e: any) => {
-    switch (e) {
-        case 'add':
-            title.value = '添加供应商'
+
+defineOptions({
+    name: 'Setting',
+})
+
+
+const dialogFormVisible = ref(false)
+const dialogImageUrl = ref('')
+const dialogVisible = ref(false)
+const handlePictureCardPreview = (file) => {
+    dialogImageUrl.value = file.url;
+    dialogVisible.value = true;
+    dialogFormVisible.value = true
+}
+
+const drawer = ref(false)
+const direction = ref('rtl')
+const ize = ref('40%')
+const dialogTitle = ref('岗位信息配置')
+const openDialog = (row, key) => {
+    switch (key) {
+        case 'setting':
+            dialogTitle.value = '岗位信息配置'
             break
-        case 'edit':
-            title.value = '修改供应商'
+        case 'modify':
+            dialogTitle.value = '岗位信息修改'
+            showSettingDrawer(row)
             break
         default:
             break
     }
-    type.value = e
-    open.value = true;
-};
-const formRef = ref(null);
-const formState = ref({
-    product: '',
-    addr: '',
-    name: '',
-    email: '',
-    phone: '',
-    contacts: ''
+    drawer.value = true
+}
+
+const handleClose = () => {
+    initForm()
+    initDraw()
+    drawer.value = false
+}
+const ID = ref(1)
+const showSettingDrawer = async (row) => {
+    const res = await getManageById({ id: row.ID })
+    ID.value = row.ID
+    if (res.code === 0) {
+        form.value = res.data.manage
+    }
+}
+const setp = ref(0)
+const isPass = ref(0)
+const imgBase64 = ref('')
+const path = import.meta.env.VITE_BASE_PATH + ':' + import.meta.env.VITE_SERVER_PORT + '/'
+
+const handleChange = (ste) => {
+    setp.value = ste
+}
+const initDraw = () => {
+}
+
+const apis = ref([])
+const departmentList = ref([])
+const genreList1 = ref([])
+const supplierList = ref([])
+const projectList = ref([])
+const fileList = ref([])
+const form = ref({
+    enter_number: "",
+    enter_year: "",
+    enter_subject: "",
+    enter_source: "",
+    enter_ratio: "",
+    grade: "",
+    post_name: "",
+    post_code: "",
+    workplace: "",
+    post_category: "",
+    perform_work: "",
+    organization_name: "",
+    organization_code: "",
+    source_category: "",
+    educational_require: "",
+    degree_require: "",
+    career: "",
+    title_require: "",
+    qualification: "",
+    other: ""
 })
-const editApiFunc = async (row: any) => {
-    const res = await getSupplierById({ id: row.ID })
-    formState.value = res.data.supplier
-    console.log(formState.value)
-    showModal('edit')
-}
-const { x, y, isDragging } = useDraggable(modalTitleRef);
 
-const Cancel = () => {
-    formRef.value.resetFields()
-    formState.value = {
-        name: '',
-        addr: '',
-        email: '',
-        phone: '',
-        product: '',
-        contacts: ''
-    }
-    open.value = false;
-}
-const startX = ref(0);
-const startY = ref(0);
-const startedDrag = ref(false);
-const transformX = ref(0);
-const transformY = ref(0);
-const preTransformX = ref(0);
-const preTransformY = ref(0);
-const dragRect = ref({
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-});
-watch([x, y], () => {
-    if (!startedDrag.value) {
-        startX.value = x.value;
-        startY.value = y.value;
-        const bodyRect = document.body.getBoundingClientRect();
-        const titleRect = modalTitleRef.value.getBoundingClientRect();
-        dragRect.value.right = bodyRect.width - titleRect.width;
-        dragRect.value.bottom = bodyRect.height - titleRect.height;
-        preTransformX.value = transformX.value;
-        preTransformY.value = transformY.value;
-    }
-    startedDrag.value = true;
-});
-watch(isDragging, () => {
-    if (!isDragging) {
-        startedDrag.value = false;
-    }
-});
-watchEffect(() => {
-    if (startedDrag.value) {
-        transformX.value =
-            preTransformX.value +
-            Math.min(Math.max(dragRect.value.left, x.value), dragRect.value.right) -
-            startX.value;
-        transformY.value =
-            preTransformY.value +
-            Math.min(Math.max(dragRect.value.top, y.value), dragRect.value.bottom) -
-            startY.value;
-    }
-});
-const transformStyle = computed(() => {
-    return {
-        transform: `translate(${transformX.value}px, ${transformY.value}px)`,
-    };
-});
 
-const onFinish = (values: any) => {
-    page.value = 1
-    pageSize.value = 10
-    getTableData()
-};
+const AuthorityUsers = ref([])
+//获取部门用户
+const departmentUinfo = async (Authority) => {
+    const table = await getUserAuthorityList({ page: page.value, pageSize: pageSize.value, authority_id: Authority, ...searchInfo.value })
+    if (table.code === 0) {
+        console.log(table.data.list)
+
+        AuthorityUsers.value = table.data.list
+    }
+}
+
+
+
+const findPrincipal = (row, step) => {
+    const setting = ref([])
+    if (row.a3_setting !== '') {
+        setting.value = JSON.parse(row.a3_setting)
+        let name = setting.value.find(item => item.issue_number == step)
+        return name.principal
+    }
+    return '暂无配置负责人'
+}
+
+const sourceCategory = ref([
+    {
+        value: '高校毕业生',
+        label: '高校毕业生'
+    },
+    {
+        value: '在校学生',
+        label: '在校学生',
+    },
+    {
+        value: '社会人士',
+        label: '社会人士',
+    }
+])
+
+const rules = ref({
+    path: [{ required: true, message: '请输入api路径', trigger: 'blur' }],
+    apiGroup: [
+        { required: true, message: '请输入组名称', trigger: 'blur' }
+    ],
+    method: [
+        { required: true, message: '请选择请求方式', trigger: 'blur' }
+    ],
+    description: [
+        { required: true, message: '请输入api介绍', trigger: 'blur' }
+    ]
+})
 
 const page = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
+const searchInfo = ref({})
+const onReset = () => {
+    searchInfo.value = {}
+}
+
+const handleSuccess = (resp) => {
+    if (resp.code === 0) {
+        ElMessage({
+            type: 'success',
+            message: '图片上传成功',
+            showClose: true
+        })
+
+        fileList.value.push({ name: resp.data.file.name, url: resp.data.file.url })
+        form.value.photograph = JSON.stringify(fileList.value)
+        return
+    }
+    ElMessage({
+        type: 'error',
+        message: '图片上传失败',
+        showClose: true
+    })
+
+};
+
+const handleRemove = (file, fileList) => {
+    // 处理删除文件的逻辑，例如从文件列表中删除文件
+    const index = fileList.indexOf(file);
+    if (index !== -1) {
+        fileList.splice(index, 1);
+    }
+    form.value.photograph = JSON.stringify(fileList.value)
+};
+
+
+// 搜索
+const onSubmit = () => {
+    page.value = 1
+    pageSize.value = 10
+    getTableData()
+}
+
+// 分页
+const handleSizeChange = (val) => {
+    pageSize.value = val
+    getTableData()
+}
+
+const handleCurrentChange = (val) => {
+    page.value = val
+    getTableData()
+}
+
+// 排序
+const sortChange = ({ prop, order }) => {
+    if (prop) {
+        if (prop === 'ID') {
+            prop = 'id'
+        }
+        searchInfo.value.orderKey = toSQLLine(prop)
+        searchInfo.value.desc = order === 'descending'
+    }
+    getTableData()
+}
+
+// 部门列表
+const department = async () => {
+    const table = await getAuthorityList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+    if (table.code === 0) {
+        departmentList.value = table.data.list
+    }
+}
+
+department()
+
+// 类别列表
+const genreList = async () => {
+    const table = await getGenreList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+    if (table.code === 0) {
+        genreList1.value = table.data.list
+    }
+}
+
+
+// 类别列表
+const supplier = async () => {
+    const table = await getSupplierList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+    if (table.code === 0) {
+        supplierList.value = table.data.list
+    }
+}
+
+
+// 类别列表
+const project = async () => {
+    const table = await getProjectList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+    if (table.code === 0) {
+        projectList.value = table.data.list
+    }
+}
+
 
 // 查询
 const getTableData = async () => {
-    const table = await getSupplierList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+    searchInfo.value.process_mode = "A3"
+    const table = await getManageList({ page: page.value, pageSize: pageSize.value, orderKey: 'id', desc: true, ...searchInfo.value })
     if (table.code === 0) {
         tableData.value = table.data.list
         total.value = table.data.total
@@ -241,120 +506,144 @@ const getTableData = async () => {
     }
 }
 
-getTableData()
 
-const handleOk = async () => {
-    switch (type.value) {
-        case 'add':
-            {
-                const res = await createSupplierApi(formState.value)
-                if (res.code === 0) {
-                    message.success('添加成功');
-                }
-                getTableData()
-                Cancel()
-            }
-            break
-        case 'edit':
-            {
-                const res = await updateSupplier(formState.value)
-                if (res.code === 0) {
-                    message.success('数据更新成功');
-                }
-                getTableData()
-                Cancel()
-            }
-            break
-        default:
-            {
-                message.error('未知操作');
-            }
-            break
+// 批量操作
+const handleSelectionChange = (val) => {
+    apis.value = val
+}
+
+// 弹窗相关
+const apiForm = ref(null)
+const initForm = () => {
+    apiForm.value.resetFields()
+    form.value = {
+        enter_number: "",
+        enter_year: "",
+        enter_subject: "",
+        enter_source: "",
+        enter_ratio: "",
+        grade: "",
+        post_name: "",
+        post_code: "",
+        workplace: "",
+        post_category: "",
+        perform_work: "",
+        organization_name: "",
+        organization_code: "",
+        source_category: "",
+        educational_require: "",
+        degree_require: "",
+        career: "",
+        title_require: "",
+        qualification: "",
+        other: ""
     }
 }
 
-const deleteApiFunc = async (row: any) => {
-    Modal.confirm({
-        title: '提示',
-        icon: createVNode(ExclamationCircleOutlined),
-        content: '此操作将永久删除数据, 是否继续?',
-        okText: '确定',
-        okType: 'danger',
-        cancelText: '取消',
-        onOk() {
-            const deleteApi = async () => {
-                const res = await deleteSupplier(row)
-                if (res.code === 0) {
-                    message.success('数据删除成功');
-                    if (tableData.value.length === 1 && page.value > 1) {
-                        page.value--
-                    }
-                    getTableData()
-                }
+const closeDialog = () => {
+    initForm()
+    drawer.value = false
+}
+
+const enterDialog = async () => {
+    apiForm.value.validate(async valid => {
+        if (valid) {
+            const res = await updateManage(form.value)
+            if (res.code === 0) {
+                ElMessage({
+                    type: 'success',
+                    message: '岗位配置成功',
+                    showClose: true
+                })
             }
-            deleteApi()
-        },
-        onCancel() {
-            console.log('Cancel');
-        },
-    });
+            getTableData()
+            closeDialog()
+        }
+    })
 }
 
-const onReset = () => {
-    searchForm.value.resetFields()
-    searchInfo.value = {
-        name: '',
-        addr: '',
-        email: '',
-        phone: '',
-        product: '',
-        contacts: ''
-    }
-}
 
-const current = ref(1);
-const pagination = computed(() => ({
-    total: total.value,
-    current: current.value,
-    pageSize: pageSize.value,
-    showSizeChanger: true,
-    pageSizeOptions: ["10", "20", "50", "100"],
-    showTotal: (total: any) => `共${total}条`,
-}));
-
-const handleTableChange = (pag: any) => {
-    page.value = pag.current;
-    current.value = pag.current;
-    pageSize.value = pag.pageSize
-    getTableData()
-};
 
 </script>
+<style lang="scss" scoped>
+.drawer-container {
+    transition: all 0.2s;
 
-<style scoped>
-#components-form-demo-advanced-search .ant-form {
-    max-width: none;
+    &:hover {
+        right: 0
+    }
+
+    position: fixed;
+    right: -20px;
+    bottom: 15%;
+    height: 40px;
+    width: 800px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    color: #fff;
+    border-radius: 4px 0 0 4px;
+    cursor: pointer;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 10%);
 }
 
-#components-form-demo-advanced-search .search-result-list {
-    margin-top: 16px;
-    border: 1px dashed #e9e9e9;
-    border-radius: 2px;
-    background-color: #fafafa;
-    min-height: 200px;
-    text-align: center;
-    padding-top: 80px;
+.setting_body {
+    padding: 20px;
+
+    .setting_card {
+        margin-bottom: 20px;
+    }
+
+    .setting_content {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+
+        >.theme-box {
+            display: flex;
+        }
+
+        >.color-box {
+            div {
+                display: flex;
+                flex-direction: column;
+            }
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-right: 20px;
+
+            .item-top {
+                position: relative;
+            }
+
+            .check {
+                position: absolute;
+                font-size: 20px;
+                color: #00afff;
+                right: 10px;
+                bottom: 10px;
+            }
+
+            p {
+                text-align: center;
+                font-size: 12px;
+            }
+        }
+    }
 }
 
-[data-theme='dark'] .ant-advanced-search-form {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid #434343;
-    padding: 24px;
-    border-radius: 2px;
+.el-card__body {
+    height: 800px;
 }
 
-[data-theme='dark'] #components-form-demo-advanced-search .search-result-list {
-    border: 1px dashed #434343;
-    background: rgba(255, 255, 255, 0.04);
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
 }
 </style>

@@ -101,13 +101,8 @@ func Routers() *gin.Engine {
 		systemRouter.InitSysExportTemplateRouter(PrivateGroup)      // 导出模板
 		exampleRouter.InitCustomerRouter(PrivateGroup)              // 客户路由
 		exampleRouter.InitFileUploadAndDownloadRouter(PrivateGroup) // 文件上传下载功能路由
-		appletRouter.InitSupplierRouter(PrivateGroup)               //供应商管理
-		appletRouter.InitTypeRouter(PrivateGroup)                   //类别管理
-		appletRouter.InitProjectRouter(PrivateGroup)
-		appletRouter.InitManageRouter(PrivateGroup)
-		appletRouter.InitComplaintRouter(PrivateGroup)
-		appletRouter.InitMessageRouter(PrivateGroup)
-		appletRouter.InitProductRouter(PrivateGroup)
+		appletRouter.InitSubjectRouter(PrivateGroup)                //供应商管理
+		appletRouter.InitPostRouter(PrivateGroup)
 	}
 
 	global.GVA_LOG.Info("router register success")

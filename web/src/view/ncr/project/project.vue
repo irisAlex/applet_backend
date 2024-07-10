@@ -4,24 +4,18 @@
             <a-form ref="searchForm" class="ant-advanced-search-form" :model="searchInfo" @finish="onFinish">
                 <a-row :gutter="24">
                     <a-col :span="6">
-                        <a-form-item label="项目名称">
-                            <a-input v-model:value="searchInfo.name" placeholder="项目名称"></a-input>
+                        <a-form-item label="专业名称">
+                            <a-input v-model:value="searchInfo.name" placeholder="专业名称"></a-input>
                         </a-form-item>
                     </a-col>
                     <a-col :span="6">
-                        <a-form-item label="项目周期">
-                            <a-input v-model:value="searchInfo.period" placeholder="项目周期"></a-input>
+                        <a-form-item label="学历">
+                            <a-input v-model:value="searchInfo.education_level_name" placeholder="学历"></a-input>
                         </a-form-item>
                     </a-col>
                     <a-col :span="6">
-                        <a-form-item label="负责人">
-                            <a-input v-model:value="searchInfo.principal" placeholder="负责人"></a-input>
-                        </a-form-item>
-                    </a-col>
-                    <a-col :span="6">
-                        <a-form-item label="项目开始日期">
-                            <a-date-picker v-model:value="searchInfo.created_at" placeholder="请选择日期" size="middle"
-                                :locale="locale" />
+                        <a-form-item label="学科">
+                            <a-input v-model:value="searchInfo.level_name" placeholder="学科"></a-input>
                         </a-form-item>
                     </a-col>
                 </a-row>
@@ -43,6 +37,8 @@
                 @change="handleTableChange">
                 <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'operation'">
+                        <a-button type="primary" @click="addChild('add', record.ID)"
+                            :icon="h(PlusOutlined)">添加子条目</a-button>
                         <a-button :icon="h(EditOutlined)" type="link" @click="editApiFunc(record)">修改</a-button>
                         <a-button :icon="h(DeleteOutlined)" type="link" @click="deleteApiFunc(record)">删除</a-button>
                     </template>
@@ -53,31 +49,20 @@
             <a-modal ref="modalRef" v-model:open="open" :wrap-style="{ overflow: 'hidden' }" @ok="handleOk"
                 cancelText="取消" okText="确定" @cancel="Cancel">
                 <a-form ref="formRef" :model="formState" :label-col="labelCol" :wrapper-col="wrapperCol">
-                    <a-form-item ref="name" label="项目名称">
+                    <a-form-item ref="name" label="名称">
                         <a-input v-model:value="formState.name" />
                     </a-form-item>
-                    <a-form-item ref="principal" label="负责人">
-                        <a-input v-model:value="formState.principal" />
-                    </a-form-item>
-                    <a-form-item ref="period" label="项目周期/天">
-                        <a-row>
-                            <a-col :span="12">
-                                <a-slider v-model:value="formState.period" :min="1" :max="20" />
-                            </a-col>
-                            <a-col :span="4">
-                                <a-input-number v-model:value="formState.period" :min="1" :max="100"
-                                    style="margin-left: 16px" />
-                            </a-col>
-                        </a-row>
-                    </a-form-item>
-                    <a-form-item ref="priority" label="优先级">
-                        <a-select v-model:value="formState.priority" style="width: 255px">
-                            <a-select-option v-for="item in methodOptions" :key="item.value" :label="`${item.label}`"
-                                :value="item.value" />
+                    <a-form-item ref="principal" label="学历">
+                        <a-select v-model:value="formState.education_level_name" style="width: 255px">
+                            <a-select-option v-for="item in education" :key="item.value" :label="`${item.value}`"
+                                :value="item.label" />
                         </a-select>
                     </a-form-item>
-                    <a-form-item ref="describe" label="项目描述">
-                        <a-textarea v-model:value="formState.describe" placeholder="项目描述" :rows="4" />
+                    <a-form-item ref="priority" label="所属类型">
+                        <a-select v-model:value="formState.level_name" style="width: 255px">
+                            <a-select-option v-for="item in belongType" :key="item.value" :label="`${item.value}`"
+                                :value="item.label" />
+                        </a-select>
                     </a-form-item>
                 </a-form>
                 <template #title>
@@ -103,7 +88,6 @@ import {
     DeleteOutlined,
     ExclamationCircleOutlined
 } from '@ant-design/icons-vue';
-import locale from 'ant-design-vue/es/date-picker/locale/zh_CN';
 import {
     getProjectList,
     createProject,
@@ -113,49 +97,43 @@ import {
 } from '@/api/project'
 import { message, Modal, TableColumnsType } from 'ant-design-vue';
 const searchInfo = ref({
+    parent_id: 0,
     name: '',
-    principal: '',
-    period: 0,
-    priority: '',
-    describe: ''
+    level_name: '',
+    education_level_name: '',
 })
 
-const methodOptions = ref([
+const education = ref([
     {
-        value: 'P1',
-        label: 'P1',
+        value: '1',
+        label: '本科',
     },
     {
-        value: 'P2',
-        label: 'P2',
+        value: '2',
+        label: '硕士研究生',
     },
     {
-        value: 'P3',
-        label: 'P3',
+        value: '3',
+        label: '博士研究生',
     },
     {
-        value: 'P4',
-        label: 'P4',
+        value: '4',
+        label: '专科',
+    }
+])
+
+const belongType = ref([
+    {
+        value: '1',
+        label: '学科',
     },
     {
-        value: 'P5',
-        label: 'P5',
+        value: '2',
+        label: '学业',
     },
     {
-        value: 'P6',
-        label: 'P6',
-    },
-    {
-        value: 'P7',
-        label: 'P7',
-    },
-    {
-        value: 'P8',
-        label: 'P8',
-    },
-    {
-        value: 'P9',
-        label: 'P9',
+        value: '3',
+        label: '专业名称',
     }
 ])
 
@@ -163,11 +141,9 @@ const labelCol = { span: 5 };
 const wrapperCol = { span: 13 };
 const columns: TableColumnsType = [
     { title: 'ID', width: 100, dataIndex: 'ID', key: 'name' },
-    { title: '项目名称', width: 100, dataIndex: 'name', key: 'age' },
-    { title: '描述', dataIndex: 'describe', key: 'addr', width: 150 },
-    { title: '负责人', dataIndex: 'principal', key: 'addr', width: 150 },
-    { title: '项目周期', dataIndex: 'period', key: 'contacts', width: 150 },
-    { title: '优先级', dataIndex: 'priority', key: 'phone', width: 150 },
+    { title: '名称', dataIndex: 'name', key: 'addr', width: 150 },
+    { title: '所属类型', width: 100, dataIndex: 'level_name', key: 'age' },
+    { title: '学历', dataIndex: 'education_level_name', key: 'addr', width: 150 },
     {
         title: '操作',
         key: 'operation',
@@ -176,17 +152,18 @@ const columns: TableColumnsType = [
     },
 ];
 const searchForm = ref()
-const title = ref('项目管理')
+const title = ref('学业管理')
 const open = ref(false);
 const modalTitleRef = ref(null);
 const type = ref()
+const parent_id = ref(0)
 const showModal = (e: any) => {
     switch (e) {
         case 'add':
-            title.value = '项目管理'
+            title.value = '添加条目'
             break
         case 'edit':
-            title.value = '编辑项目'
+            title.value = '编辑条目'
             break
         default:
             break
@@ -194,13 +171,19 @@ const showModal = (e: any) => {
     type.value = e
     open.value = true;
 };
+
+const addChild = (e: any, id: any) => {
+    type.value = e
+    parent_id.value = id
+    open.value = true;
+}
+
 const formRef = ref(null);
 const formState = ref({
     name: '',
-    principal: '',
-    period: 0,
-    priority: '',
-    describe: ''
+    level_name: '',
+    education_level_name: '',
+    parent_id: 0
 })
 const editApiFunc = async (row: any) => {
     const res = await getProjectById({ id: row.ID })
@@ -214,10 +197,9 @@ const Cancel = () => {
     formRef.value.resetFields()
     formState.value = {
         name: '',
-        principal: '',
-        period: 0,
-        priority: '',
-        describe: ''
+        level_name: '',
+        education_level_name: '',
+        parent_id: 0
     }
     open.value = false;
 }
@@ -298,6 +280,7 @@ const handleOk = async () => {
     switch (type.value) {
         case 'add':
             {
+                formState.value.parent_id = parent_id.value
                 const res = await createProject(formState.value)
                 if (res.code === 0) {
                     message.success('添加成功');
@@ -355,10 +338,9 @@ const onReset = () => {
     searchForm.value.resetFields()
     searchInfo.value = {
         name: '',
-        principal: '',
-        period: 0,
-        priority: '',
-        describe: ''
+        level_name: '',
+        education_level_name: '',
+        parent_id: 0
     }
 }
 

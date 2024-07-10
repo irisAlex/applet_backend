@@ -16,16 +16,16 @@ import (
 //@param: api model.SysApi
 //@return: err error
 
-type SupplierApiService struct{}
+type SubjectApiService struct{}
 
-func (apiService *SupplierApiService) CreateApi(supplier applet.Supplier) (err error) {
-	return global.GVA_DB.Create(&supplier).Error
+func (apiService *SubjectApiService) CreateApi(Subject applet.Subject) (err error) {
+	return global.GVA_DB.Create(&Subject).Error
 }
 
-func (apiService *SupplierApiService) DeleteSupplier(supplier applet.Supplier) (err error) {
-	var entity applet.Supplier
-	err = global.GVA_DB.Where("id = ?", supplier.ID).First(&entity).Error // 根据id查询api记录
-	if errors.Is(err, gorm.ErrRecordNotFound) {                           // api记录不存在
+func (apiService *SubjectApiService) DeleteSubject(Subject applet.Subject) (err error) {
+	var entity applet.Subject
+	err = global.GVA_DB.Where("id = ?", Subject.ID).First(&entity).Error // 根据id查询api记录
+	if errors.Is(err, gorm.ErrRecordNotFound) {                          // api记录不存在
 		return err
 	}
 	err = global.GVA_DB.Delete(&entity).Error
@@ -39,35 +39,35 @@ func (apiService *SupplierApiService) DeleteSupplier(supplier applet.Supplier) (
 	return nil
 }
 
-func (apiService *SupplierApiService) GetAPIInfoList(api applet.Supplier, info request.PageInfo, order string, desc bool) (list interface{}, total int64, err error) {
+func (apiService *SubjectApiService) GetAPIInfoList(api applet.Subject, info request.PageInfo, order string, desc bool) (list interface{}, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
-	db := global.GVA_DB.Model(&applet.Supplier{})
-	var apiList []applet.Supplier
+	db := global.GVA_DB.Model(&applet.Subject{})
+	var apiList []applet.Subject
 
-	if api.Addr != "" {
-		db = db.Where("addr LIKE ?", api.Addr)
-	}
+	// if api.Addr != "" {
+	// 	db = db.Where("addr LIKE ?", api.Addr)
+	// }
 
-	if api.Contacts != "" {
-		db = db.Where("contacts LIKE ?", api.Contacts)
-	}
+	// if api.Contacts != "" {
+	// 	db = db.Where("contacts LIKE ?", api.Contacts)
+	// }
 
-	if api.Email != "" {
-		db = db.Where("email LIKE ?", api.Email)
-	}
+	// if api.Email != "" {
+	// 	db = db.Where("email LIKE ?", api.Email)
+	// }
 
-	if api.Phone != "" {
-		db = db.Where("phone LIKE ?", api.Phone)
-	}
+	// if api.Phone != "" {
+	// 	db = db.Where("phone LIKE ?", api.Phone)
+	// }
 
-	if api.Product != "" {
-		db = db.Where("product LIKE ?", api.Product)
-	}
+	// if api.Product != "" {
+	// 	db = db.Where("product LIKE ?", api.Product)
+	// }
 
-	if api.Name != "" {
-		db = db.Where("name = ?", api.Name)
-	}
+	// if api.Name != "" {
+	// 	db = db.Where("name = ?", api.Name)
+	// }
 
 	err = db.Count(&total).Error
 
@@ -108,7 +108,7 @@ func (apiService *SupplierApiService) GetAPIInfoList(api applet.Supplier, info r
 // //@description: 获取所有的api
 // //@return:  apis []model.SysApi, err error
 
-// func (apiService *SupplierApiService) GetAllApis() (apis []system.SysApi, err error) {
+// func (apiService *SubjectApiService) GetAllApis() (apis []system.SysApi, err error) {
 // 	err = global.GVA_DB.Find(&apis).Error
 // 	return
 // }
@@ -119,7 +119,7 @@ func (apiService *SupplierApiService) GetAPIInfoList(api applet.Supplier, info r
 // //@param: id float64
 // //@return: api model.SysApi, err error
 
-func (apiService *SupplierApiService) GetSupplierById(id int) (api applet.Supplier, err error) {
+func (apiService *SubjectApiService) GetSubjectById(id int) (api applet.Subject, err error) {
 	err = global.GVA_DB.Where("id = ?", id).First(&api).Error
 	return
 }
@@ -130,7 +130,7 @@ func (apiService *SupplierApiService) GetSupplierById(id int) (api applet.Suppli
 // //@param: api model.SysApi
 // //@return: err error
 
-func (apiService *SupplierApiService) UpdateSupplier(api applet.Supplier) (err error) {
+func (apiService *SubjectApiService) UpdateSubject(api applet.Subject) (err error) {
 	err = global.GVA_DB.Save(&api).Error
 	if err != nil {
 		return err
@@ -144,7 +144,7 @@ func (apiService *SupplierApiService) UpdateSupplier(api applet.Supplier) (err e
 // //@param: apis []model.SysApi
 // //@return: err error
 
-// func (apiService *SupplierApiService) DeleteApisByIds(ids request.IdsReq) (err error) {
+// func (apiService *SubjectApiService) DeleteApisByIds(ids request.IdsReq) (err error) {
 // 	var apis []system.SysApi
 // 	err = global.GVA_DB.Find(&apis, "id in ?", ids.Ids).Delete(&apis).Error
 // 	if err != nil {

@@ -14,21 +14,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type MessageApi struct{}
+type PostApi struct{}
 
-func (s *MessageApi) SendMessage(c *gin.Context) {
-	var Message applet.Message
-	err := c.ShouldBindJSON(&Message)
+func (s *PostApi) CreatePost(c *gin.Context) {
+	var Post applet.Post
+	err := c.ShouldBindJSON(&Post)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err = utils.Verify(Message, utils.ApiVerify)
+	err = utils.Verify(Post, utils.ApiVerify)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err = MessageService.CreateMessage(Message)
+	err = PostService.CreatePost(Post)
 	if err != nil {
 		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败", c)
@@ -37,8 +37,8 @@ func (s *MessageApi) SendMessage(c *gin.Context) {
 	response.OkWithMessage("创建成功", c)
 }
 
-func (s *MessageApi) GetMessageList(c *gin.Context) {
-	var pageInfo appleteq.SearchMessageParams
+func (s *PostApi) GetPostList(c *gin.Context) {
+	var pageInfo appleteq.SearchPostParams
 	err := c.ShouldBindJSON(&pageInfo)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -49,7 +49,7 @@ func (s *MessageApi) GetMessageList(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	list, total, err := MessageService.GetMessageInfoList(pageInfo.Message, pageInfo.PageInfo, pageInfo.OrderKey, pageInfo.Desc)
+	list, total, err := PostService.GetPostInfoList(pageInfo.Post, pageInfo.PageInfo, pageInfo.OrderKey, pageInfo.Desc)
 	if err != nil {
 		global.GVA_LOG.Error("获取失败!", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
@@ -63,8 +63,8 @@ func (s *MessageApi) GetMessageList(c *gin.Context) {
 	}, "获取成功", c)
 }
 
-func (s *MessageApi) GetMessageByName(c *gin.Context) {
-	var idInfo request.GetByName
+func (s *PostApi) GetPostById(c *gin.Context) {
+	var idInfo request.GetById
 	err := c.ShouldBindJSON(&idInfo)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -75,23 +75,17 @@ func (s *MessageApi) GetMessageByName(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	api, total, err := MessageService.GetMessageByname(idInfo.Name)
+	api, err := PostService.GetPostById(idInfo.ID)
 	if err != nil {
 		global.GVA_LOG.Error("获取失败!", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
 		return
 	}
-
-	response.OkWithDetailed(response.PageResult{
-		List:     api,
-		Total:    total,
-		Page:     10,
-		PageSize: 100,
-	}, "获取成功", c)
+	response.OkWithDetailed(appletep.PostResponse{Applet: api}, "获取成功", c)
 }
 
-func (s *MessageApi) DeleteMessage(c *gin.Context) {
-	var api applet.Message
+func (s *PostApi) DeletePost(c *gin.Context) {
+	var api applet.Post
 	err := c.ShouldBindJSON(&api)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -102,7 +96,7 @@ func (s *MessageApi) DeleteMessage(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err = MessageService.DeleteMessage(api)
+	err = PostService.DeletePost(api)
 	if err != nil {
 		global.GVA_LOG.Error("删除失败!", zap.Error(err))
 		response.FailWithMessage("删除失败", c)
@@ -111,30 +105,8 @@ func (s *MessageApi) DeleteMessage(c *gin.Context) {
 	response.OkWithMessage("删除成功", c)
 }
 
-func (s *MessageApi) GetMessageMessageByAppletID(c *gin.Context) {
-	var api request.GetByAppletID
-	err := c.ShouldBindJSON(&api)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	err = utils.Verify(api, utils.IdVerify)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	message, err := MessageService.GetMessageByAppletID(api.AppletID, api.ReportName)
-	if err != nil {
-		global.GVA_LOG.Error("当前用户没有操作权限!", zap.Error(err))
-		response.FailWithMessage("当前用户没有操作权限", c)
-		return
-	}
-
-	response.OkWithDetailed(appletep.MessageResponse{Applet: message}, "获取成功", c)
-}
-
-func (s *MessageApi) UpdateMessage(c *gin.Context) {
-	var api applet.Message
+func (s *PostApi) UpdatePost(c *gin.Context) {
+	var api applet.Post
 	err := c.ShouldBindJSON(&api)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -145,32 +117,11 @@ func (s *MessageApi) UpdateMessage(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err = MessageService.UpdateMessage(api)
+	err = PostService.UpdatePost(api)
 	if err != nil {
 		global.GVA_LOG.Error("修改失败!", zap.Error(err))
 		response.FailWithMessage("修改失败", c)
 		return
 	}
 	response.OkWithMessage("修改成功", c)
-}
-
-func (s *MessageApi) SetStatus(c *gin.Context) {
-	var api request.GetById
-	err := c.ShouldBindJSON(&api)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	err = utils.Verify(api, utils.ApiVerify)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	err = MessageService.SetMessageState(uint(api.ID))
-	if err != nil {
-		global.GVA_LOG.Error("更新状态失败!", zap.Error(err))
-		response.FailWithMessage("更新状态失败", c)
-		return
-	}
-	response.OkWithMessage("更新状态成功", c)
 }

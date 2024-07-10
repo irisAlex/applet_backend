@@ -14,21 +14,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ProjectApi struct{}
+type SubjectApi struct{}
 
-func (s *ProjectApi) CreateProject(c *gin.Context) {
-	var project applet.Project
-	err := c.ShouldBindJSON(&project)
+func (s *SubjectApi) CreateSubjectApi(c *gin.Context) {
+	var Subject applet.Subject
+	err := c.ShouldBindJSON(&Subject)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err = utils.Verify(project, utils.ApiVerify)
+	err = utils.Verify(Subject, utils.ApiVerify)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err = ProjectService.CreateProject(project)
+	err = SubjectService.CreateApi(Subject)
 	if err != nil {
 		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败", c)
@@ -37,8 +37,8 @@ func (s *ProjectApi) CreateProject(c *gin.Context) {
 	response.OkWithMessage("创建成功", c)
 }
 
-func (s *ProjectApi) GetProjectList(c *gin.Context) {
-	var pageInfo appleteq.SearchProjectParams
+func (s *SubjectApi) GetSubjectApiList(c *gin.Context) {
+	var pageInfo appleteq.SearchSubjectParams
 	err := c.ShouldBindJSON(&pageInfo)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -49,7 +49,7 @@ func (s *ProjectApi) GetProjectList(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	list, total, err := ProjectService.GetProjectInfoList(pageInfo.Project, pageInfo.PageInfo, pageInfo.OrderKey, pageInfo.Desc)
+	list, total, err := SubjectService.GetAPIInfoList(pageInfo.Subject, pageInfo.PageInfo, pageInfo.OrderKey, pageInfo.Desc)
 	if err != nil {
 		global.GVA_LOG.Error("获取失败!", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
@@ -63,7 +63,7 @@ func (s *ProjectApi) GetProjectList(c *gin.Context) {
 	}, "获取成功", c)
 }
 
-func (s *ProjectApi) GetProjectById(c *gin.Context) {
+func (s *SubjectApi) GetSubjectById(c *gin.Context) {
 	var idInfo request.GetById
 	err := c.ShouldBindJSON(&idInfo)
 	if err != nil {
@@ -75,17 +75,17 @@ func (s *ProjectApi) GetProjectById(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	api, err := ProjectService.GetProjectById(idInfo.ID)
+	api, err := SubjectService.GetSubjectById(idInfo.ID)
 	if err != nil {
 		global.GVA_LOG.Error("获取失败!", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
 		return
 	}
-	response.OkWithDetailed(appletep.ProjectResponse{Applet: api}, "获取成功", c)
+	response.OkWithDetailed(appletep.SubjectResponse{Applet: api}, "获取成功", c)
 }
 
-func (s *ProjectApi) DeleteProject(c *gin.Context) {
-	var api applet.Project
+func (s *SubjectApi) DeleteSubject(c *gin.Context) {
+	var api applet.Subject
 	err := c.ShouldBindJSON(&api)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -96,7 +96,7 @@ func (s *ProjectApi) DeleteProject(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err = ProjectService.DeleteProject(api)
+	err = SubjectService.DeleteSubject(api)
 	if err != nil {
 		global.GVA_LOG.Error("删除失败!", zap.Error(err))
 		response.FailWithMessage("删除失败", c)
@@ -105,8 +105,8 @@ func (s *ProjectApi) DeleteProject(c *gin.Context) {
 	response.OkWithMessage("删除成功", c)
 }
 
-func (s *ProjectApi) UpdateProject(c *gin.Context) {
-	var api applet.Project
+func (s *SubjectApi) UpdateSubject(c *gin.Context) {
+	var api applet.Subject
 	err := c.ShouldBindJSON(&api)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -117,7 +117,7 @@ func (s *ProjectApi) UpdateProject(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	err = ProjectService.UpdateProject(api)
+	err = SubjectService.UpdateSubject(api)
 	if err != nil {
 		global.GVA_LOG.Error("修改失败!", zap.Error(err))
 		response.FailWithMessage("修改失败", c)

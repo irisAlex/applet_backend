@@ -10,14 +10,14 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProjectService struct{}
+type PostService struct{}
 
-func (apiService *ProjectService) CreateProject(supplier applet.Project) (err error) {
+func (apiService *PostService) CreatePost(supplier applet.Post) (err error) {
 	return global.GVA_DB.Create(&supplier).Error
 }
 
-func (apiService *ProjectService) DeleteProject(supplier applet.Project) (err error) {
-	var entity applet.Project
+func (apiService *PostService) DeletePost(supplier applet.Post) (err error) {
+	var entity applet.Post
 	err = global.GVA_DB.Where("id = ?", supplier.ID).First(&entity).Error // 根据id查询api记录
 	if errors.Is(err, gorm.ErrRecordNotFound) {                           // api记录不存在
 		return err
@@ -33,30 +33,11 @@ func (apiService *ProjectService) DeleteProject(supplier applet.Project) (err er
 	return nil
 }
 
-func (apiService *ProjectService) GetProjectInfoList(api applet.Project, info request.PageInfo, order string, desc bool) (list interface{}, total int64, err error) {
+func (apiService *PostService) GetPostInfoList(api applet.Post, info request.PageInfo, order string, desc bool) (list interface{}, total int64, err error) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
-	db := global.GVA_DB.Model(&applet.Project{})
-	var apiList []applet.Project
-
-	if api.Name != "" {
-		db = db.Where("name = ?", api.Name)
-	}
-	if api.Describe != "" {
-		db = db.Where("describe = ?", api.Describe)
-	}
-
-	if api.Period > 0 {
-		db = db.Where("period = ?", api.Period)
-	}
-
-	if api.Principal != "" {
-		db = db.Where("principal = ?", api.Principal)
-	}
-
-	if api.Priority != "" {
-		db = db.Where("priority = ?", api.Priority)
-	}
+	db := global.GVA_DB.Model(&applet.Post{})
+	var apiList []applet.Post
 
 	if !api.CreatedAt.IsZero() {
 		db = db.Where(" created_at = ? ", api.CreatedAt.Format("2006-01-02"))
@@ -73,10 +54,6 @@ func (apiService *ProjectService) GetProjectInfoList(api applet.Project, info re
 			// 感谢 Tom4t0 提交漏洞信息
 			orderMap := make(map[string]bool, 5)
 			orderMap["id"] = true
-			orderMap["period"] = true
-			orderMap["principal"] = true
-			orderMap["describe"] = true
-			orderMap["priority"] = true
 			orderMap["name"] = true
 			if orderMap[order] {
 				if desc {
@@ -97,15 +74,20 @@ func (apiService *ProjectService) GetProjectInfoList(api applet.Project, info re
 	return apiList, total, err
 }
 
-func (apiService *ProjectService) GetProjectById(id int) (api applet.Project, err error) {
+func (apiService *PostService) GetPostById(id int) (api applet.Post, err error) {
 	err = global.GVA_DB.Where("id = ?", id).First(&api).Error
 	return
 }
 
-func (apiService *ProjectService) UpdateProject(api applet.Project) (err error) {
+func (apiService *PostService) UpdatePost(api applet.Post) (err error) {
 	err = global.GVA_DB.Save(&api).Error
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (apiService *PostService) GetSubjectByEID(id int) (api applet.Post, err error) {
+	err = global.GVA_DB.Where("id = ? and parent_id=? ", id, id).First(&api).Error
+	return
 }
