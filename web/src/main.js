@@ -20,10 +20,10 @@ import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
 initDom()
 
-import Nprogress from 'nprogress'
-import 'nprogress/nprogress.css'
-Nprogress.configure({ showSpinner: false, ease: 'ease', speed: 500 })
-Nprogress.start()
+// import Nprogress from 'nprogress'
+// import 'nprogress/nprogress.css'
+// Nprogress.configure({ showSpinner: false, ease: 'ease', speed: 500 })
+// Nprogress.start()
 const app = createApp(App)
 app.config.productionTip = false
 

@@ -3,11 +3,6 @@
         <div class="gva-search-box">
             <el-form ref="searchForm" :inline="true" :model="searchInfo">
                 <el-form-item label="部门" style="width:200px;" prop="method">
-                    <el-select v-model="searchInfo.department" placeholder="选择部门">
-                        <el-option v-for="item in departmentList" :key="item.authorityId" :label="item.authorityName"
-                            :value="item.authorityName">
-                        </el-option>
-                    </el-select>
                 </el-form-item>
                 <el-form-item label="类型" style="width:200px;" prop="method">
                     <el-select v-model="searchInfo.mold" placeholder="请选择">
@@ -17,10 +12,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="类别" prop="method" style="width:200px;">
-                    <el-select v-model="searchInfo.category" placeholder="请选择">
-                        <el-option v-for="item in genreList1" :key="item.name" :label="item.genre" :value="item.genre">
-                        </el-option>
-                    </el-select>
+
                 </el-form-item>
                 <el-form-item label="受检物名称" prop="method" style="width:200px;">
                     <el-input v-model="searchInfo.checkout_name" placeholder="受检物名称" />
@@ -43,32 +35,35 @@
             </div>
             <el-table :data="tableData" @sort-change="sortChange" @selection-change="handleSelectionChange">
                 <el-table-column align="left" label="ID" min-width="150" prop="ID" />
-                <el-table-column align="left" label="招考人数" min-width="150" prop="serialnumber" />
-                <el-table-column align="left" label="入围比例" min-width="150" prop="department" />
-                <el-table-column align="left" label="招考年份" min-width="150" prop="mold" />
-                <el-table-column align="left" label="进面分数线" min-width="150" prop="category" />
-                <el-table-column align="left" label="数据来源" min-width="150" prop="checkout_name" />
-                <el-table-column align="left" label="岗位名称" min-width="150" prop="checkout_number" />
-                <el-table-column align="left" label="岗位代码" min-width="150" prop="process_mode" />
-                <el-table-column align="left" label="岗位类别" min-width="150" prop="process_mode" />
-                <el-table-column align="left" label="从事工作" min-width="150" prop="process_mode" />
+                <el-table-column align="left" label="招考人数" min-width="150" prop="enter_number" />
+                <el-table-column align="left" label="入围比例" min-width="150" prop="enter_ratio" />
+                <el-table-column align="left" label="招考年份" min-width="150" prop="enter_year">
+                    <template #default="scope">
+                        <i class="el-icon-time"></i>
+                        <span style="margin-left: 10px">{{ formatDate(scope.row.enter_year) }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column align="left" label="进面分数线" min-width="150" prop="fractional_line" />
+                <el-table-column align="left" label="数据来源" min-width="150" prop="enter_source" />
+                <el-table-column align="left" label="岗位名称" min-width="150" prop="post_name" />
+                <el-table-column align="left" label="岗位代码" min-width="150" prop="post_code" />
+                <el-table-column align="left" label="岗位类别" min-width="150" prop="post_category" />
+                <el-table-column align="left" label="从事工作" min-width="150" prop="perform_work" />
 
-                <el-table-column align="left" label="单位名称" min-width="150" prop="process_mode" />
+                <el-table-column align="left" label="单位名称" min-width="150" prop="organization_name" />
 
-                <el-table-column align="left" label="单位序号" min-width="150" prop="process_mode" />
+                <el-table-column align="left" label="单位序号" min-width="150" prop="organization_code" />
 
-                <el-table-column align="left" label="其他条件" min-width="150" prop="process_mode" />
+                <el-table-column align="left" label="其他条件" min-width="150" prop="other" />
 
-                <el-table-column align="left" label="职业资格" min-width="150" prop="process_mode">
+                <el-table-column align="left" label="职业资格" min-width="150" prop="qualification">
                 </el-table-column>
                 <el-table-column align="left" fixed="right" label="操作" width="300">
                     <template #default="scope">
-                        <el-button icon="download" type="primary" link @click="downExcel(scope.row)">下载</el-button>
-                        <el-button type="primary" icon="setting" link @click="openDialog(scope.row, 'setting')">
-                            配置
+                        <el-button icon="edit" type="primary" link @click="modifyPostData(scope.row.ID)">修改</el-button>
+                        <el-button type="primary" icon="delete" link @click="openDialog('setting')">
+                            删除
                         </el-button>
-                        <el-button icon="edit" type="primary" link
-                            @click="openDialog(scope.row, 'report')">填写报告</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -87,11 +82,11 @@
                         <el-timeline-item timestamp="考情分析" placement="top">
                             <el-card>
                                 <el-form-item label=" 招考人数:" prop="enter_number" style="width:50%">
-                                    <el-input v-model="form.enter_number" @input='handleChange(1)'></el-input>
+                                    <el-input v-model.number="form.enter_number"></el-input>
                                 </el-form-item>
 
                                 <el-form-item label="入围比例:" prop="enter_ratio" style="width:50%">
-                                    <el-input v-model="form.enter_ratio" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.enter_ratio"></el-input>
                                 </el-form-item>
 
                                 <el-form-item label="招考年份:" prop="enter_year" style="width:50%">
@@ -100,33 +95,36 @@
                                 </el-form-item>
 
                                 <el-form-item label="进面分数线:" prop="fractional_line" style="width:50%">
-                                    <el-input v-model="form.fractional_line" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.fractional_line"></el-input>
                                 </el-form-item>
 
                                 <el-form-item label="数据来源:" prop="enter_source" style="width:50%">
-                                    <el-input v-model="form.enter_source" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.enter_source"></el-input>
                                 </el-form-item>
                             </el-card>
                         </el-timeline-item>
                         <el-timeline-item timestamp="岗位信息" placement="top">
                             <el-card>
                                 <el-form-item label="岗位名称:" prop="post_name" style="width:50%">
-                                    <el-input v-model="form.post_name" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.post_name"></el-input>
                                 </el-form-item>
                                 <el-form-item label="岗位代码:" prop="post_code" style="width:50%">
-                                    <el-input v-model="form.post_code" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.post_code"></el-input>
                                 </el-form-item>
                                 <el-form-item label="岗位类别:" prop="post_category" style="width:50%">
-                                    <el-input v-model="form.post_category" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.post_category"></el-input>
                                 </el-form-item>
                                 <el-form-item label="从事工作:" prop="perform_work" style="width:50%">
-                                    <el-input v-model="form.perform_work" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.perform_work"></el-input>
                                 </el-form-item>
                                 <el-form-item label="单位名称:" prop="organization_name" style="width:50%">
-                                    <el-input v-model="form.organization_name" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.organization_name"></el-input>
                                 </el-form-item>
                                 <el-form-item label="单位序号:" prop="organization_code" style="width:50%">
-                                    <el-input v-model="form.organization_code" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.organization_code"></el-input>
+                                </el-form-item>
+                                <el-form-item label="工作所在:" prop="workplace" style="width:50%">
+                                    <elui-china-area-dht v-model="form.workplace"></elui-china-area-dht>
                                 </el-form-item>
                             </el-card>
                         </el-timeline-item>
@@ -171,13 +169,13 @@
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="学位要求:" prop="degree_require" style="width:50%">
-                                    <el-input v-model="form.degree_require" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.degree_require"></el-input>
                                 </el-form-item>
                                 <el-form-item label="职称要求:" prop="qualification" style="width:50%">
-                                    <el-input v-model="form.qualification" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.qualification"></el-input>
                                 </el-form-item>
                                 <el-form-item label="职业资格:" prop="title_require" style="width:50%">
-                                    <el-input v-model="form.title_require" @input='handleChange(1)'></el-input>
+                                    <el-input v-model="form.title_require"></el-input>
                                 </el-form-item>
                                 <el-form-item label="其他条件:" prop="other" style="width:50%;">
                                     <el-input type="textarea" placeholder="请输入内容" v-model="form.other" maxlength="50"
@@ -206,30 +204,31 @@
 import {
     getPostList,
     getSubjectByEId,
-    getSubjectByEName
+    getSubjectByEName,
+    createPost,
+    updatePost,
+    getPostById
 } from '@/api/post'
-import { toSQLLine } from '@/utils/stringFun'
-import { ref } from 'vue'
+
+import { toSQLLine, formatDate } from '@/utils/stringFun'
+import { ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
+import { EluiChinaAreaDht } from 'elui-china-area-dht'
 defineOptions({
     name: 'Setting',
 })
 
 
-const dialogFormVisible = ref(false)
-const dialogImageUrl = ref('')
-const dialogVisible = ref(false)
-const handlePictureCardPreview = (file) => {
-    dialogImageUrl.value = file.url;
-    dialogVisible.value = true;
-    dialogFormVisible.value = true
-}
+const data = ref([
+    '110000', '110100', '110101'
+])
 
 const drawer = ref(false)
 const direction = ref('rtl')
 const ize = ref('40%')
 const dialogTitle = ref('岗位信息配置')
-const openDialog = (row, key) => {
+const typeT = ref("")
+const openDialog = (key) => {
     switch (key) {
         case 'setting':
             dialogTitle.value = '岗位信息配置'
@@ -241,6 +240,7 @@ const openDialog = (row, key) => {
         default:
             break
     }
+    typeT.value = key
     drawer.value = true
 }
 
@@ -257,14 +257,9 @@ const showSettingDrawer = async (row) => {
         form.value = res.data.manage
     }
 }
-const setp = ref(0)
 
-const handleChange = (ste) => {
-    setp.value = ste
-}
 const initDraw = () => {
 }
-const projectList = ref([])
 const form = ref({
     enter_number: "",
     enter_year: "",
@@ -282,12 +277,14 @@ const form = ref({
     educational_require: "",
     degree_require: "",
     career: "",
+    career_id: "",
     title_require: "",
     qualification: "",
     other: "",
     specialty: "",
     subject: "",
-    fractional_line
+    subject_id: "",
+    fractional_line: ""
 })
 
 
@@ -353,6 +350,54 @@ const handleCurrentChange = (val) => {
     getTableData()
 }
 
+
+
+watch(
+    () => form.value.educational_require,
+    () => {
+        if (form.value.educational_require !== '') {
+            getSubjectNameList(form.value.educational_require)
+
+        }
+    }
+)
+
+watch(
+    () => form.value.subject_id,
+    () => {
+        if (form.value.subject_id !== '') {
+            getSubjectCareeNameList(form.value.subject_id)
+        }
+    }
+)
+
+
+watch(
+    () => form.value.career_id,
+    () => {
+        if (form.value.career_id !== '') {
+            getSpecialtyNameList(form.value.career_id)
+        }
+    }
+)
+
+const modifyPostData = async (id) => {
+    const table = await getPostById({ id: id })
+    if (table.code !== 0) {
+        {
+            ElMessage({
+                type: 'error',
+                message: '网络消失在～～～～',
+                showClose: true
+            })
+        }
+        return
+    }
+    form.value = table.data.post
+    typeT.value = 'modify'
+    drawer.value = true
+}
+
 // 排序
 const sortChange = ({ prop, order }) => {
     if (prop) {
@@ -368,42 +413,73 @@ const sortChange = ({ prop, order }) => {
 const specialtyList = ref([])
 // 科目列表
 const getSubjectCareeNameList = async (id) => {
-    const table = await getSubjectByEId({ id: id })
-    console.log(table, careerName)
-    if (table.code === 0) {
-        specialtyList.value = table.data.subject
+    id = form.value.subject_id === '' ? id : form.value.subject_id
+    if (id === '') {
+        return
     }
+    const table = await getSubjectByEId({ id: parseInt(id) })
+    if (table.code !== 0) {
+        {
+            ElMessage({
+                type: 'error',
+                message: '网络消失在～～～～',
+                showClose: true
+            })
+        }
+        return
+    }
+    // form.value.specialty = ''
+    // specialtyList.value = []
+    specialtyList.value = table.data.subject
 }
 
 const specialtyNameList = ref([])
 // 科目列表
 const getSpecialtyNameList = async (id) => {
-    const table = await getSubjectByEId({ id: id })
-    console.log(table, careerName)
-    if (table.code === 0) {
-        specialtyNameList.value = table.data.subject
+    id = form.value.career_id === '' ? id : form.value.career_id
+    if (id === '') {
+        return
     }
+    const table = await getSubjectByEId({ id: parseInt(id) })
+    if (table.code !== 0) {
+        ElMessage({
+            type: 'error',
+            message: '网络消失在～～～～',
+            showClose: true
+        })
+        return
+    }
+    // form.value.specialty = ''
+    specialtyNameList.value = table.data.subject
 }
 
 const careerList = ref([])
 // 科目列表
 const getSubjectNameList = async (name) => {
     const table = await getSubjectByEName({ name: name })
-    console.log(table)
-    if (table.code === 0) {
-        careerList.value = table.data.subject
+    if (table.code !== 0) {
+        ElMessage({
+            type: 'error',
+            message: '网络消失在～～～～',
+            showClose: true
+        })
+        return
     }
-    console.log(careerList.value)
+    // form.value.subject = ''
+    // form.value.specialty = ''
+    // specialtyList.value = []
+    // specialtyNameList.value = []
+    careerList.value = table.data.subject
 }
 // 类别列表
-const Post = async () => {
+const getTableData = async () => {
     const table = await getPostList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
     if (table.code === 0) {
-        PostList.value = table.data.post
+        tableData.value = table.data.list
     }
 }
 
-// getPostList()
+getTableData()
 
 // 批量操作
 const handleSelectionChange = (val) => {
@@ -431,11 +507,13 @@ const initForm = () => {
         educational_require: "",
         degree_require: "",
         career: "",
+        career_id: "",
         title_require: "",
         qualification: "",
         other: "",
         specialty: "",
         subject: "",
+        subject_id: "",
         fractional_line: ""
     }
 }
@@ -448,14 +526,50 @@ const closeDialog = () => {
 const enterDialog = async () => {
     apiForm.value.validate(async valid => {
         if (valid) {
-            const res = await updateManage(form.value)
-            if (res.code === 0) {
-                ElMessage({
-                    type: 'success',
-                    message: '岗位配置成功',
-                    showClose: true
-                })
+            switch (typeT.value) {
+                case "setting":
+                    {
+                        form.value.career_id = form.value.career.toString()
+                        form.value.subject_id = form.value.subject.toString()
+                        form.value.subject = careerList.value.find(user => user.ID === form.value.subject).name
+                        form.value.career = specialtyList.value.find(user => user.ID === form.value.career).name
+                        if (form.value.workplace.length >= 0) {
+                            form.value.workplace = JSON.stringify(form.value.workplace)
+                        }
+                        const res = await createPost(form.value)
+                        if (res.code === 0) {
+                            ElMessage({
+                                type: 'success',
+                                message: '岗位配置成功',
+                                showClose: true
+                            })
+                        }
+                    }
+
+                    break;
+                case "modify":
+                    {
+                        const res = await updatePost(form.value)
+                        if (res.code === 0) {
+                            ElMessage({
+                                type: 'success',
+                                message: '岗位更新成功',
+                                showClose: true
+                            })
+                        }
+                    }
+                    break
+                default:
+                    {
+                        ElMessage({
+                            type: 'error',
+                            message: '未知操作',
+                            showClose: true
+                        })
+                    }
+                    break
             }
+
             getTableData()
             closeDialog()
         }
