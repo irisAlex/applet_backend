@@ -17,7 +17,7 @@ const IOCN = `
 │            Welcome  Use Anx NCP System               │
 │          information on anx website                  │
 │          please visit:                               │
-│               https://www.anx.com/                   │
+│               https://alex.libin./                   │
 │                                                      │
 └──────────────────────────────────────────────────────┘
 `

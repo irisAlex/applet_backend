@@ -125,3 +125,65 @@ func (s *PostApi) UpdatePost(c *gin.Context) {
 	}
 	response.OkWithMessage("修改成功", c)
 }
+
+func (s *PostApi) Previous_Post(c *gin.Context) {
+	api, err := PostService.Previous_Post()
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(appletep.PPResponse{Applet: api}, "获取成功", c)
+}
+
+func (s *PostApi) ProvinceStatistics(c *gin.Context) {
+	api, err := PostService.ProvinceStatistics()
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(appletep.PsResponse{Applet: api}, "获取成功", c)
+}
+
+func (s *PostApi) CompanyStatistics(c *gin.Context) {
+	var idInfo request.GetByName
+	err := c.ShouldBindJSON(&idInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	err = utils.Verify(idInfo, utils.IdVerify)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	api, err := PostService.CompanyStatistics(idInfo.Name)
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(appletep.PsResponse{Applet: api}, "获取成功", c)
+}
+
+func (s *PostApi) GetPostByMajor(c *gin.Context) {
+	var idInfo request.GetByName
+	err := c.ShouldBindJSON(&idInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	err = utils.Verify(idInfo, utils.IdVerify)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	api, err := PostService.GetPostByMajor(idInfo.Name)
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(appletep.PostMResponse{Applet: api}, "获取成功", c)
+}

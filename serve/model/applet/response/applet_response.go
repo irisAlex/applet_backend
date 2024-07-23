@@ -9,3 +9,15 @@ type SubjectResponse struct {
 type PostResponse struct {
 	Applet applet.Post `json:"post"`
 }
+
+type PostMResponse struct {
+	Applet []applet.Post `json:"post"`
+}
+
+type PPResponse struct {
+	Applet []applet.PreviousPostYear `json:"pp"`
+}
+
+type PsResponse struct {
+	Applet []applet.ProvinceStatistic `json:"ps"`
+}

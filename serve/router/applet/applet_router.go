@@ -47,6 +47,10 @@ func (s *PostRouter) InitPostRouter(Router *gin.RouterGroup) {
 		// SubjectApiRouter.DELETE("deleteApisByIds", SubjectRouterApi.DeleteApisByIds) // 删除选中api
 	}
 	{
-		typeApiRouterWithoutRecord.POST("getAllPostList", typeRouterApi.GetPostList) // 获取所有api
+		typeApiRouterWithoutRecord.POST("getAllPostList", typeRouterApi.GetPostList)               // 获取所有api
+		typeApiRouterWithoutRecord.POST("getPreviousPost", typeRouterApi.Previous_Post)            // 获取所有api
+		typeApiRouterWithoutRecord.POST("getProvinceStatistics", typeRouterApi.ProvinceStatistics) // 获取所有api
+		typeApiRouterWithoutRecord.POST("getCompanyStatistics", typeRouterApi.CompanyStatistics)   // 获取所有api
+		typeApiRouterWithoutRecord.POST("getPostByMajor", typeRouterApi.GetPostByMajor)            // 获取所有api
 	}
 }

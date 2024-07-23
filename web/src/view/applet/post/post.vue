@@ -61,7 +61,7 @@
                 <el-table-column align="left" fixed="right" label="操作" width="300">
                     <template #default="scope">
                         <el-button icon="edit" type="primary" link @click="modifyPostData(scope.row.ID)">修改</el-button>
-                        <el-button type="primary" icon="delete" link @click="openDialog('setting')">
+                        <el-button type="primary" icon="delete" link @click="deleteApiFunc(scope.row)">
                             删除
                         </el-button>
                     </template>
@@ -84,13 +84,16 @@
                                 <el-form-item label=" 招考人数:" prop="enter_number" style="width:50%">
                                     <el-input v-model.number="form.enter_number"></el-input>
                                 </el-form-item>
-
+                                <el-form-item label=" 报考人数:" prop="apply_number" style="width:50%">
+                                    <el-input v-model.number="form.apply_number"></el-input>
+                                </el-form-item>
                                 <el-form-item label="入围比例:" prop="enter_ratio" style="width:50%">
                                     <el-input v-model="form.enter_ratio"></el-input>
                                 </el-form-item>
 
                                 <el-form-item label="招考年份:" prop="enter_year" style="width:50%">
-                                    <el-date-picker v-model="form.enter_year" type="year" placeholder="选择年">
+                                    <el-date-picker v-model="form.enter_year" type="year" value-format="YYYY"
+                                        placeholder="选择年">
                                     </el-date-picker>
                                 </el-form-item>
 
@@ -123,8 +126,16 @@
                                 <el-form-item label="单位序号:" prop="organization_code" style="width:50%">
                                     <el-input v-model="form.organization_code"></el-input>
                                 </el-form-item>
-                                <el-form-item label="工作所在:" prop="workplace" style="width:50%">
+                                <el-form-item label="工作所在地:" prop="workplace" style="width:50%">
                                     <elui-china-area-dht v-model="form.workplace"></elui-china-area-dht>
+                                </el-form-item>
+
+                                <el-form-item label="户口类型:" prop="account" style="width:50%">
+                                    <el-select v-model="form.account" placeholder="请选择">
+                                        <el-option v-for="item in account" :key="item.value" :label="item.value"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
                                 </el-form-item>
                             </el-card>
                         </el-timeline-item>
@@ -169,13 +180,31 @@
                                     </el-select>
                                 </el-form-item>
                                 <el-form-item label="学位要求:" prop="degree_require" style="width:50%">
-                                    <el-input v-model="form.degree_require"></el-input>
+                                    <el-select v-model="form.degree_require" placeholder="请选择">
+                                        <el-option v-for="item in degree" :key="item.value" :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
                                 </el-form-item>
                                 <el-form-item label="职称要求:" prop="qualification" style="width:50%">
                                     <el-input v-model="form.qualification"></el-input>
                                 </el-form-item>
                                 <el-form-item label="职业资格:" prop="title_require" style="width:50%">
                                     <el-input v-model="form.title_require"></el-input>
+                                </el-form-item>
+                                <el-form-item label="性别:" prop="gender" style="width:50%">
+                                    <el-select v-model="form.gender" placeholder="请选择">
+                                        <el-option v-for="item in gender" :key="item.value" :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="工作经验:" prop="work_experience" style="width:50%">
+                                    <el-select v-model="form.work_experience" placeholder="请选择">
+                                        <el-option v-for="item in work_experience" :key="item.value" :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
                                 </el-form-item>
                                 <el-form-item label="其他条件:" prop="other" style="width:50%;">
                                     <el-input type="textarea" placeholder="请输入内容" v-model="form.other" maxlength="50"
@@ -207,21 +236,17 @@ import {
     getSubjectByEName,
     createPost,
     updatePost,
-    getPostById
+    getPostById,
+    deletePost
 } from '@/api/post'
 
 import { toSQLLine, formatDate } from '@/utils/stringFun'
 import { ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { EluiChinaAreaDht } from 'elui-china-area-dht'
 defineOptions({
     name: 'Setting',
 })
-
-
-const data = ref([
-    '110000', '110100', '110101'
-])
 
 const drawer = ref(false)
 const direction = ref('rtl')
@@ -284,7 +309,15 @@ const form = ref({
     specialty: "",
     subject: "",
     subject_id: "",
-    fractional_line: ""
+    fractional_line: "",
+    account: '',
+    gender: '',
+    work_experience: '',
+    apply_number: '',
+    province_name: '',
+    province_code: '',
+    city_code: '',
+    district_code: ''
 })
 
 
@@ -303,24 +336,96 @@ const sourceCategory = ref([
     }
 ])
 
+const gender = ref([
+    {
+        value: '男性',
+    },
+    {
+        value: '女性',
+    },
+    {
+        value: '性别不限',
+    }
+])
+
+const work_experience = ref([
+    {
+        value: '要求工作经验',
+    },
+    {
+        value: '工作经验不限',
+    }
+])
+
+
 const education = ref([
     {
+        value: '博士研究生',
+        label: '博士研究生'
+    },
+    {
+        value: '硕士研究生',
+        label: '硕士研究生'
+    },
+    {
         value: '本科',
-        label: '本科'
+        label: '本科',
+    },
+    {
+        value: '大专',
+        label: '大专',
+    },
+    {
+        value: '专科',
+        label: '专科',
+    },
+    {
+        value: '高中',
+        label: '高中',
+    },
+    {
+        value: '初中',
+        label: '初中',
+    },
+    {
+        value: '小学',
+        label: '小学',
+    }
+])
+const account = ref([
+    {
+        value: '农村',
+        label: '农村'
+    },
+    {
+        value: '城镇',
+        label: '城镇',
+    },
+    {
+        value: '外籍人士',
+        label: '外籍人士',
+    },
+    {
+        value: '户口不限',
+        label: '户口不限',
+    }
+])
+
+const degree = ref([
+    {
+        value: '博士',
+        label: '博士'
     },
     {
         value: '硕士',
         label: '硕士',
     },
     {
-        value: '博士',
-        label: '博士',
-    },
-    {
-        value: '专科',
-        label: '专科',
+        value: '学士',
+        label: '学士',
     }
 ])
+
 
 const page = ref(1)
 const total = ref(0)
@@ -394,6 +499,8 @@ const modifyPostData = async (id) => {
         return
     }
     form.value = table.data.post
+    form.value.workplace = JSON.parse(form.value.workplace)
+    console.log(form.value.workplace)
     typeT.value = 'modify'
     drawer.value = true
 }
@@ -514,7 +621,15 @@ const initForm = () => {
         specialty: "",
         subject: "",
         subject_id: "",
-        fractional_line: ""
+        fractional_line: "",
+        account: '',
+        gender: '',
+        work_experience: '',
+        apply_number: '',
+        province_name: '',
+        province_code: '',
+        city_code: '',
+        district_code: ''
     }
 }
 
@@ -526,6 +641,17 @@ const closeDialog = () => {
 const enterDialog = async () => {
     apiForm.value.validate(async valid => {
         if (valid) {
+            if (form.value.workplace.length >= 0) {
+                province.value.forEach(item => {
+                    if (item.code == form.value.workplace[0]) {
+                        form.value.province_name = item.name
+                    }
+                })
+                form.value.province_code = form.value.workplace[0]
+                form.value.city_code = form.value.workplace[1]
+                form.value.district_code = form.value.workplace[2]
+                form.value.workplace = JSON.stringify(form.value.workplace)
+            }
             switch (typeT.value) {
                 case "setting":
                     {
@@ -533,9 +659,6 @@ const enterDialog = async () => {
                         form.value.subject_id = form.value.subject.toString()
                         form.value.subject = careerList.value.find(user => user.ID === form.value.subject).name
                         form.value.career = specialtyList.value.find(user => user.ID === form.value.career).name
-                        if (form.value.workplace.length >= 0) {
-                            form.value.workplace = JSON.stringify(form.value.workplace)
-                        }
                         const res = await createPost(form.value)
                         if (res.code === 0) {
                             ElMessage({
@@ -576,7 +699,199 @@ const enterDialog = async () => {
     })
 }
 
+const deleteApiFunc = async (row) => {
+    ElMessageBox.confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+    })
+        .then(async () => {
+            const res = await deletePost(row)
+            if (res.code === 0) {
+                ElMessage({
+                    type: 'success',
+                    message: '删除成功!'
+                })
+                if (tableData.value.length === 1 && page.value > 1) {
+                    page.value--
+                }
+                getTableData()
+            }
+        })
+}
 
+const province = ref([
+    {
+        "code": "110000",
+        "name": "北京市",
+        "province": "11"
+    },
+    {
+        "code": "120000",
+        "name": "天津市",
+        "province": "12"
+    },
+    {
+        "code": "130000",
+        "name": "河北省",
+        "province": "13"
+    },
+    {
+        "code": "140000",
+        "name": "山西省",
+        "province": "14"
+    },
+    {
+        "code": "150000",
+        "name": "内蒙古自治区",
+        "province": "15"
+    },
+    {
+        "code": "210000",
+        "name": "辽宁省",
+        "province": "21"
+    },
+    {
+        "code": "220000",
+        "name": "吉林省",
+        "province": "22"
+    },
+    {
+        "code": "230000",
+        "name": "黑龙江省",
+        "province": "23"
+    },
+    {
+        "code": "310000",
+        "name": "上海市",
+        "province": "31"
+    },
+    {
+        "code": "320000",
+        "name": "江苏省",
+        "province": "32"
+    },
+    {
+        "code": "330000",
+        "name": "浙江省",
+        "province": "33"
+    },
+    {
+        "code": "340000",
+        "name": "安徽省",
+        "province": "34"
+    },
+    {
+        "code": "350000",
+        "name": "福建省",
+        "province": "35"
+    },
+    {
+        "code": "360000",
+        "name": "江西省",
+        "province": "36"
+    },
+    {
+        "code": "370000",
+        "name": "山东省",
+        "province": "37"
+    },
+    {
+        "code": "410000",
+        "name": "河南省",
+        "province": "41"
+    },
+    {
+        "code": "420000",
+        "name": "湖北省",
+        "province": "42"
+    },
+    {
+        "code": "430000",
+        "name": "湖南省",
+        "province": "43"
+    },
+    {
+        "code": "440000",
+        "name": "广东省",
+        "province": "44"
+    },
+    {
+        "code": "450000",
+        "name": "广西壮族自治区",
+        "province": "45"
+    },
+    {
+        "code": "460000",
+        "name": "海南省",
+        "province": "46"
+    },
+    {
+        "code": "500000",
+        "name": "重庆市",
+        "province": "50"
+    },
+    {
+        "code": "510000",
+        "name": "四川省",
+        "province": "51"
+    },
+    {
+        "code": "520000",
+        "name": "贵州省",
+        "province": "52"
+    },
+    {
+        "code": "530000",
+        "name": "云南省",
+        "province": "53"
+    },
+    {
+        "code": "540000",
+        "name": "西藏自治区",
+        "province": "54"
+    },
+    {
+        "code": "610000",
+        "name": "陕西省",
+        "province": "61"
+    },
+    {
+        "code": "620000",
+        "name": "甘肃省",
+        "province": "62"
+    },
+    {
+        "code": "630000",
+        "name": "青海省",
+        "province": "63"
+    },
+    {
+        "code": "640000",
+        "name": "宁夏回族自治区",
+        "province": "64"
+    },
+    {
+        "code": "650000",
+        "name": "新疆维吾尔自治区",
+        "province": "65"
+    },
+    {
+        "code": "710000",
+        "name": "台湾省",
+        "province": "71"
+    },
+    {
+        "code": "810000",
+        "name": "香港特别行政区",
+        "province": "81"
+    },
+    {
+        "code": "820000",
+        "name": "澳门特别行政区",
+        "province": "82"
+    }
+])
 
 </script>
 <style lang="scss" scoped>

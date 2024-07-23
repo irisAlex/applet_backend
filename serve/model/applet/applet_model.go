@@ -22,7 +22,7 @@ type Post struct {
 	Organization_Code   string `json:"organization_code" gorm:"comment:类别"`
 	Source_Category     string `json:"source_category" gorm:"comment:类别"`
 	Educational_Require string `json:"educational_require" gorm:"comment:类别"`
-	Degree_Require      string `json:"gedegree_requirenre" gorm:"comment:类别"`
+	Degree_Require      string `json:"degree_require" gorm:"comment:类别"`
 	Career              string `json:"career" gorm:"comment:类别"`
 	Career_Id           string `json:"career_id" gorm:"comment:类别"`
 	Title_Require       string `json:"title_require" gorm:"comment:类别"`
@@ -30,6 +30,14 @@ type Post struct {
 	Other               string `json:"other" gorm:"comment:类别"`
 	Specialty           string `json:"specialty" gorm:"comment:类别"`
 	Fractional_Line     string `json:"fractional_line" gorm:"comment:类别"`
+	Account             string `json:"account" gorm:"comment:类别"`
+	Gender              string `json:"gender" gorm:"comment:类别"`
+	Work_Experience     string `json:"work_experience" gorm:"comment:类别"`
+	Apply_Number        int64  `json:"apply_number" gorm:"comment:类别"`
+	Province_Name       string `json:"province_name" gorm:"comment:类别"`
+	Province_Code       string `json:"province_code" gorm:"comment:类别"`
+	City_Code           string `json:"city_code" gorm:"comment:类别"`
+	District_Code       string `json:"district_code" gorm:"comment:类别"`
 }
 
 func (Post) TableName() string {
@@ -46,4 +54,17 @@ type Subject struct {
 
 func (Subject) TableName() string {
 	return "applet_Subjects"
+}
+
+type PreviousPostYear struct {
+	Year         string `json:"year" gorm:"comment:类别"`
+	Enter_Number int64  `json:"enter_number" gorm:"comment:类别"`
+	Apply_Number int64  `json:"apply_number" gorm:"comment:类别"`
+	Post_Number  int64  `json:"post_number" gorm:"comment:类别"`
+}
+
+type ProvinceStatistic struct {
+	Province_Name string `json:"province_name" gorm:"comment:类别"`
+	Enter_Total   int64  `json:"enter_total" gorm:"comment:类别"`
+	Post_Number   int64  `json:"post_number" gorm:"comment:类别"`
 }

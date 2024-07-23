@@ -1,3 +1,5 @@
+import data from "area-data"
+
 /* eslint-disable */
 export const toUpperCase = (str) => {
     if (str[0]) {
@@ -30,5 +32,5 @@ export const toHump = (name) => {
 
 export const formatDate = (dateString) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString()
+    return date.getFullYear()
 }

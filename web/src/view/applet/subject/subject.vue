@@ -96,7 +96,6 @@ import {
     deleteSubject
 } from '@/api/subject'
 import { message, Modal, TableColumnsType } from 'ant-design-vue';
-import { any } from 'core-js/fn/promise';
 const searchInfo = ref({
     parent_id: 0,
     name: '',
