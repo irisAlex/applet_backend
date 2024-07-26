@@ -103,6 +103,7 @@ func Routers() *gin.Engine {
 		exampleRouter.InitFileUploadAndDownloadRouter(PrivateGroup) // 文件上传下载功能路由
 		appletRouter.InitSubjectRouter(PrivateGroup)                //供应商管理
 		appletRouter.InitPostRouter(PrivateGroup)
+		appletRouter.InitFavRouter((PrivateGroup))
 	}
 
 	global.GVA_LOG.Info("router register success")

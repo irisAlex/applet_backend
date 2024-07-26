@@ -10,6 +10,18 @@ type PostResponse struct {
 	Applet applet.Post `json:"post"`
 }
 
+type FavResponse struct {
+	Applet applet.Fav `json:"fav"`
+}
+
+type FavArrResponse struct {
+	Applet []applet.Post `json:"favp"`
+}
+
+type IsFavResponse struct {
+	IsFav int `json:"is_fav"`
+}
+
 type PostMResponse struct {
 	Applet []applet.Post `json:"post"`
 }

@@ -38,6 +38,7 @@ type Post struct {
 	Province_Code       string `json:"province_code" gorm:"comment:类别"`
 	City_Code           string `json:"city_code" gorm:"comment:类别"`
 	District_Code       string `json:"district_code" gorm:"comment:类别"`
+	Work_Place_Text     string `json:"work_place_text" gorm:"comment:类别"`
 }
 
 func (Post) TableName() string {
@@ -67,4 +68,15 @@ type ProvinceStatistic struct {
 	Province_Name string `json:"province_name" gorm:"comment:类别"`
 	Enter_Total   int64  `json:"enter_total" gorm:"comment:类别"`
 	Post_Number   int64  `json:"post_number" gorm:"comment:类别"`
+}
+
+type Fav struct {
+	global.GVA_MODEL
+	Pid   int64 `json:"pid" gorm:"comment:类别"`
+	Uid   int64 `json:"uid" gorm:"comment:类别"`
+	IsFav bool  `json:"isfav" gorm:"comment:类别"`
+}
+
+func (Fav) TableName() string {
+	return "applet_fav"
 }

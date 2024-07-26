@@ -35,7 +35,7 @@ func (s *SubjectRouter) InitSubjectRouter(Router *gin.RouterGroup) {
 type PostRouter struct{}
 
 func (s *PostRouter) InitPostRouter(Router *gin.RouterGroup) {
-	typeApiRouter := Router.Group("Post").Use(middleware.OperationRecord())
+	typeApiRouter := Router.Group("Post").Use()
 	typeApiRouterWithoutRecord := Router.Group("Post")
 
 	typeRouterApi := v1.ApiGroupApp.AppletApiGroup.PostApi
@@ -52,5 +52,28 @@ func (s *PostRouter) InitPostRouter(Router *gin.RouterGroup) {
 		typeApiRouterWithoutRecord.POST("getProvinceStatistics", typeRouterApi.ProvinceStatistics) // 获取所有api
 		typeApiRouterWithoutRecord.POST("getCompanyStatistics", typeRouterApi.CompanyStatistics)   // 获取所有api
 		typeApiRouterWithoutRecord.POST("getPostByMajor", typeRouterApi.GetPostByMajor)            // 获取所有api
+	}
+}
+
+type FavRouter struct{}
+
+func (f *FavRouter) InitFavRouter(Router *gin.RouterGroup) {
+	typeApiRouter := Router.Group("Fav").Use()
+	typeApiRouterWithoutRecord := Router.Group("Fav")
+
+	typeRouterApi := v1.ApiGroupApp.AppletApiGroup.FavApi
+	{
+		typeApiRouter.POST("createFav", typeRouterApi.CreateFav)   // 创建Api
+		typeApiRouter.POST("deleteFav", typeRouterApi.DeleteFav)   // 删除Api
+		typeApiRouter.POST("getFavById", typeRouterApi.GetFavById) // 获取单条Api消息
+		typeApiRouter.POST("update", typeRouterApi.UpdateFav)      // 更新api
+		typeApiRouter.POST("is_fav", typeRouterApi.IsFav)          // 更新api
+		typeApiRouter.POST("getFavPost", typeRouterApi.GetFavPost) // 更新api
+
+		// SubjectApiRouter.DELETE("deleteApisByIds", SubjectRouterApi.DeleteApisByIds) // 删除选中api
+	}
+	{
+		typeApiRouterWithoutRecord.POST("getAllFavList", typeRouterApi.GetFavList) // 获取所有api
+		// 获取所有api
 	}
 }

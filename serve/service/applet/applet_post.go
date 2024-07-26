@@ -34,8 +34,6 @@ func (apiService *PostService) DeletePost(supplier applet.Post) (err error) {
 }
 
 func (apiService *PostService) GetPostInfoList(api applet.Post, info request.PageInfo, order string, desc bool) (list interface{}, total int64, err error) {
-	fmt.Println(api)
-
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	db := global.GVA_DB.Model(&applet.Post{})
@@ -94,7 +92,7 @@ func (apiService *PostService) GetPostInfoList(api applet.Post, info request.Pag
 
 			err = db.Order(OrderStr).Find(&apiList).Error
 		} else {
-			err = db.Debug().Order("id").Find(&apiList).Error
+			err = db.Order("id").Find(&apiList).Error
 		}
 	}
 	return apiList, total, err
@@ -115,7 +113,7 @@ func (apiService *PostService) UpdatePost(api applet.Post) (err error) {
 
 func (apiService *PostService) Previous_Post() (pp []applet.PreviousPostYear, err error) {
 	var results []applet.PreviousPostYear
-	err = global.GVA_DB.Debug().Model(&applet.Post{}).Select("count(1) as post_number , enter_year as year, SUM(enter_number) AS enter_number , SUM(apply_number) as apply_number").
+	err = global.GVA_DB.Model(&applet.Post{}).Select("count(1) as post_number , enter_year as year, SUM(enter_number) AS enter_number , SUM(apply_number) as apply_number").
 		Group("enter_year").
 		Order("enter_year").
 		Scan(&results).Error
@@ -127,7 +125,7 @@ func (apiService *PostService) Previous_Post() (pp []applet.PreviousPostYear, er
 
 func (apiService *PostService) ProvinceStatistics() (ps []applet.ProvinceStatistic, err error) {
 	var results []applet.ProvinceStatistic
-	err = global.GVA_DB.Debug().Model(&applet.Post{}).Select("province_name , count(1) as post_number ,  SUM(enter_number) AS enter_total").
+	err = global.GVA_DB.Model(&applet.Post{}).Select("province_name , count(1) as post_number ,  SUM(enter_number) AS enter_total").
 		Group("province_name").
 		Order("province_name").
 		Scan(&results).Error
@@ -139,7 +137,7 @@ func (apiService *PostService) ProvinceStatistics() (ps []applet.ProvinceStatist
 
 func (apiService *PostService) CompanyStatistics(pn string) (ps []applet.ProvinceStatistic, err error) {
 	var results []applet.ProvinceStatistic
-	err = global.GVA_DB.Debug().Model(&applet.Post{}).Select("organization_name as province_name , count(1) as post_number ,  SUM(enter_number) AS enter_total").Where("province_name=?", pn).
+	err = global.GVA_DB.Model(&applet.Post{}).Select("organization_name as province_name , count(1) as post_number ,  SUM(enter_number) AS enter_total").Where("province_name=?", pn).
 		Group("organization_name").
 		Order("organization_name").
 		Scan(&results).Error

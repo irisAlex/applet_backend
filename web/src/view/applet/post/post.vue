@@ -127,7 +127,8 @@
                                     <el-input v-model="form.organization_code"></el-input>
                                 </el-form-item>
                                 <el-form-item label="工作所在地:" prop="workplace" style="width:50%">
-                                    <elui-china-area-dht v-model="form.workplace"></elui-china-area-dht>
+                                    <elui-china-area-dht v-model="form.workplace"
+                                        @change="onChange"></elui-china-area-dht>
                                 </el-form-item>
 
                                 <el-form-item label="户口类型:" prop="account" style="width:50%">
@@ -243,7 +244,7 @@ import {
 import { toSQLLine, formatDate } from '@/utils/stringFun'
 import { ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { EluiChinaAreaDht } from 'elui-china-area-dht'
+import { EluiChinaAreaDht, Textcode } from 'elui-china-area-dht'
 defineOptions({
     name: 'Setting',
 })
@@ -267,6 +268,16 @@ const openDialog = (key) => {
     }
     typeT.value = key
     drawer.value = true
+}
+
+
+const onChange = (e) => {
+    const chinaData = new EluiChinaAreaDht.ChinaArea().chinaAreaflat
+    let wt = ''
+    e.forEach(item => {
+        wt += chinaData[item].label + " "
+    })
+    form.value.work_place_text = wt
 }
 
 const handleClose = () => {
@@ -317,7 +328,8 @@ const form = ref({
     province_name: '',
     province_code: '',
     city_code: '',
-    district_code: ''
+    district_code: '',
+    work_place_text: ''
 })
 
 
@@ -629,7 +641,8 @@ const initForm = () => {
         province_name: '',
         province_code: '',
         city_code: '',
-        district_code: ''
+        district_code: '',
+        work_place_text: ''
     }
 }
 
