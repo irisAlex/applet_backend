@@ -65,6 +65,9 @@ func (apiService *PostService) GetPostInfoList(api applet.Post, info request.Pag
 	if api.Enter_Year != "" {
 		db = db.Where(" enter_year = ? ", api.Enter_Year)
 	}
+	if api.Post_Name != "" {
+		db = db.Where(" post_name = ? ", api.Post_Name)
+	}
 
 	err = db.Count(&total).Error
 
@@ -90,9 +93,9 @@ func (apiService *PostService) GetPostInfoList(api applet.Post, info request.Pag
 				return apiList, total, err
 			}
 
-			err = db.Order(OrderStr).Find(&apiList).Error
+			err = db.Debug().Order(OrderStr).Find(&apiList).Error
 		} else {
-			err = db.Order("id").Find(&apiList).Error
+			err = db.Debug().Order("id").Find(&apiList).Error
 		}
 	}
 	return apiList, total, err

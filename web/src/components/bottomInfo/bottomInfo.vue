@@ -4,14 +4,16 @@
     <div class="text-center">
       <span class="mr-1">Powered by</span>
       <span>
-        Alex
+        ©️
+        和木世纪
       </span>
     </div>
     <slot />
     <div class="text-center">
       <span class="mr-1">Copyright</span>
       <span>
-        Alex团队
+        ©️
+        和木世纪团队
       </span>
     </div>
   </div>
@@ -23,7 +25,7 @@ defineOptions({
 })
 
 console.log(
-  `%c powered by %c Alex %c`,
+  `%c powered by %c ©️ 和木世纪 %c`,
   'background:#0081ff; padding: 1px; border-radius: 3px 0 0 3px; color: #fff',
   'background:#354855; padding: 1px 5px; border-radius: 0 3px 3px 0; color: #fff; font-weight: bold;',
   'background:transparent'

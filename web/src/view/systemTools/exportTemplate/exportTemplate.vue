@@ -1,243 +1,108 @@
 <template>
   <div>
-    <WarningBar
-      title="本功能提供同步的表格导出功能，大数据量的异步表格导出功能，可以选择点我定制"
-      href="https://flipped-aurora.feishu.cn/docx/KwjxdnvatozgwIxGV0rcpkZSn4d"
-    />
+    <WarningBar title="本功能提供同步的表格导出功能，大数据量的异步表格导出功能，可以选择点我定制" href="" />
     <div class="gva-search-box">
-      <el-form
-        ref="elSearchFormRef"
-        :inline="true"
-        :model="searchInfo"
-        class="demo-form-inline"
-        :rules="searchRule"
-        @keyup.enter="onSubmit"
-      >
-        <el-form-item
-          label="创建日期"
-          prop="createdAt"
-        >
+      <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule"
+        @keyup.enter="onSubmit">
+        <el-form-item label="创建日期" prop="createdAt">
           <template #label>
             <span>
               创建日期
               <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">
-                <el-icon><QuestionFilled /></el-icon>
+                <el-icon>
+                  <QuestionFilled />
+                </el-icon>
               </el-tooltip>
             </span>
           </template>
-          <el-date-picker
-            v-model="searchInfo.startCreatedAt"
-            type="datetime"
-            placeholder="开始日期"
-            :disabled-date="time=> searchInfo.endCreatedAt ? time.getTime() > searchInfo.endCreatedAt.getTime() : false"
-          />
+          <el-date-picker v-model="searchInfo.startCreatedAt" type="datetime" placeholder="开始日期"
+            :disabled-date="time => searchInfo.endCreatedAt ? time.getTime() > searchInfo.endCreatedAt.getTime() : false" />
           —
-          <el-date-picker
-            v-model="searchInfo.endCreatedAt"
-            type="datetime"
-            placeholder="结束日期"
-            :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"
-          />
+          <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期"
+            :disabled-date="time => searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false" />
         </el-form-item>
-        <el-form-item
-          label="模板名称"
-          prop="name"
-        >
-          <el-input
-            v-model="searchInfo.name"
-            placeholder="搜索条件"
-          />
+        <el-form-item label="模板名称" prop="name">
+          <el-input v-model="searchInfo.name" placeholder="搜索条件" />
 
         </el-form-item>
-        <el-form-item
-          label="表名称"
-          prop="tableName"
-        >
-          <el-input
-            v-model="searchInfo.tableName"
-            placeholder="搜索条件"
-          />
+        <el-form-item label="表名称" prop="tableName">
+          <el-input v-model="searchInfo.tableName" placeholder="搜索条件" />
 
         </el-form-item>
-        <el-form-item
-          label="模板标识"
-          prop="templateID"
-        >
-          <el-input
-            v-model="searchInfo.templateID"
-            placeholder="搜索条件"
-          />
+        <el-form-item label="模板标识" prop="templateID">
+          <el-input v-model="searchInfo.templateID" placeholder="搜索条件" />
 
         </el-form-item>
         <el-form-item>
-          <el-button
-            type="primary"
-            icon="search"
-            @click="onSubmit"
-          >查询</el-button>
-          <el-button
-            icon="refresh"
-            @click="onReset"
-          >重置</el-button>
+          <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
+          <el-button icon="refresh" @click="onReset">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button
-          type="primary"
-          icon="plus"
-          @click="openDialog"
-        >新增</el-button>
+        <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
 
-        <el-button
-          icon="delete"
-          style="margin-left: 10px;"
-          :disabled="!multipleSelection.length"
-          @click="onDelete"
-        >删除</el-button>
+        <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length"
+          @click="onDelete">删除</el-button>
       </div>
-      <el-table
-        ref="multipleTable"
-        style="width: 100%"
-        tooltip-effect="dark"
-        :data="tableData"
-        row-key="ID"
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column
-          type="selection"
-          width="55"
-        />
-        <el-table-column
-          align="left"
-          label="日期"
-          width="180"
-        >
+      <el-table ref="multipleTable" style="width: 100%" tooltip-effect="dark" :data="tableData" row-key="ID"
+        @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" />
+        <el-table-column align="left" label="日期" width="180">
           <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
-        <el-table-column
-          align="left"
-          label="数据库"
-          width="120"
-        >
+        <el-table-column align="left" label="数据库" width="120">
           <template #default="scope">
             <span>{{ scope.row.dbNname || "GVA库" }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-            align="left"
-            label="模板标识"
-            prop="templateID"
-            width="120"
-        />
-        <el-table-column
-          align="left"
-          label="模板名称"
-          prop="name"
-          width="120"
-        />
-        <el-table-column
-          align="left"
-          label="表名称"
-          prop="tableName"
-          width="120"
-        />
-        <el-table-column
-          align="left"
-          label="模板信息"
-          prop="templateInfo"
-          min-width="120"
-        />
-        <el-table-column
-          align="left"
-          label="操作"
-          min-width="120"
-        >
+        <el-table-column align="left" label="模板标识" prop="templateID" width="120" />
+        <el-table-column align="left" label="模板名称" prop="name" width="120" />
+        <el-table-column align="left" label="表名称" prop="tableName" width="120" />
+        <el-table-column align="left" label="模板信息" prop="templateInfo" min-width="120" />
+        <el-table-column align="left" label="操作" min-width="120">
           <template #default="scope">
-            <el-button
-              type="primary"
-              link
-              icon="edit"
-              class="table-button"
-              @click="updateSysExportTemplateFunc(scope.row)"
-            >变更</el-button>
-            <el-button
-              type="primary"
-              link
-              icon="delete"
-              @click="deleteRow(scope.row)"
-            >删除</el-button>
+            <el-button type="primary" link icon="edit" class="table-button"
+              @click="updateSysExportTemplateFunc(scope.row)">变更</el-button>
+            <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <div class="gva-pagination">
-        <el-pagination
-          layout="total, sizes, prev, pager, next, jumper"
-          :current-page="page"
-          :page-size="pageSize"
-          :page-sizes="[10, 30, 50, 100]"
-          :total="total"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
-        />
+        <el-pagination layout="total, sizes, prev, pager, next, jumper" :current-page="page" :page-size="pageSize"
+          :page-sizes="[10, 30, 50, 100]" :total="total" @current-change="handleCurrentChange"
+          @size-change="handleSizeChange" />
       </div>
     </div>
-    <el-drawer
-      v-model="dialogFormVisible"
-      size="60%"
-      :before-close="closeDialog"
-      :title="type==='create'?'添加':'修改'"
-      :show-close="false"
-      destroy-on-close
-    >
+    <el-drawer v-model="dialogFormVisible" size="60%" :before-close="closeDialog" :title="type === 'create' ? '添加' : '修改'"
+      :show-close="false" destroy-on-close>
 
       <template #header>
         <div class="flex justify-between items-center">
-          <span class="text-lg">{{ type==='create'?'添加':'修改' }}</span>
+          <span class="text-lg">{{ type === 'create' ? '添加' : '修改' }}</span>
           <div>
             <el-button @click="closeDialog">取 消</el-button>
-            <el-button
-              type="primary"
-              @click="enterDialog"
-            >确 定</el-button>
+            <el-button type="primary" @click="enterDialog">确 定</el-button>
           </div>
         </div>
       </template>
 
-      <el-form
-        ref="elFormRef"
-        :model="formData"
-        label-position="right"
-        :rules="rule"
-        label-width="100px"
-      >
+      <el-form ref="elFormRef" :model="formData" label-position="right" :rules="rule" label-width="100px">
 
-        <el-form-item
-          label="业务库"
-          prop="dbName"
-        >
+        <el-form-item label="业务库" prop="dbName">
           <template #label>
             <el-tooltip
               content="注：需要提前到db-list自行配置多数据库，如未配置需配置后重启服务方可使用。若无法选择，请到config.yaml中设置disabled:false，选择导入导出的目标库。"
-              placement="bottom"
-              effect="light"
-            >
-              <div> 业务库 <el-icon><QuestionFilled /></el-icon> </div>
+              placement="bottom" effect="light">
+              <div> 业务库 <el-icon>
+                  <QuestionFilled />
+                </el-icon> </div>
             </el-tooltip>
           </template>
-          <el-select
-            v-model="formData.dbName"
-            clearable
-            placeholder="选择业务库"
-          >
-            <el-option
-              v-for="item in dbList"
-              :key="item.aliasName"
-              :value="item.aliasName"
-              :label="item.aliasName"
-              :disabled="item.disable"
-            >
+          <el-select v-model="formData.dbName" clearable placeholder="选择业务库">
+            <el-option v-for="item in dbList" :key="item.aliasName" :value="item.aliasName" :label="item.aliasName"
+              :disabled="item.disable">
               <div>
                 <span>{{ item.aliasName }}</span>
                 <span style="float:right;color:#8492a6;font-size:13px">{{ item.dbName }}</span>
@@ -246,154 +111,53 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          label="模板名称:"
-          prop="name"
-        >
-          <el-input
-            v-model="formData.name"
-            :clearable="true"
-            placeholder="请输入模板名称"
-          />
+        <el-form-item label="模板名称:" prop="name">
+          <el-input v-model="formData.name" :clearable="true" placeholder="请输入模板名称" />
         </el-form-item>
-        <el-form-item
-          label="表名称:"
-          prop="tableName"
-        >
-          <el-input
-            v-model="formData.tableName"
-            :clearable="true"
-            placeholder="请输入要导出的表名称"
-          />
+        <el-form-item label="表名称:" prop="tableName">
+          <el-input v-model="formData.tableName" :clearable="true" placeholder="请输入要导出的表名称" />
         </el-form-item>
-        <el-form-item
-          label="模板标识:"
-          prop="templateID"
-        >
-          <el-input
-            v-model="formData.templateID"
-            :clearable="true"
-            placeholder="模板标识为前端组件需要挂在的标识属性"
-          />
+        <el-form-item label="模板标识:" prop="templateID">
+          <el-input v-model="formData.templateID" :clearable="true" placeholder="模板标识为前端组件需要挂在的标识属性" />
         </el-form-item>
 
-        <el-form-item
-          label="关联条件:"
-        >
-          <div
-            v-for="(join,key) in formData.joinTemplate"
-            :key="key"
-            class="flex gap-4 w-full mb-2"
-          >
-            <el-select
-              v-model="join.joins"
-              placeholder="请选择关联方式"
-            >
-              <el-option
-                label="LEFT JOIN"
-                value="LEFT JOIN"
-              />
-              <el-option
-                label="INNER JOIN"
-                value="INNER JOIN"
-              />
-              <el-option
-                label="RIGHT JOIN"
-                value="RIGHT JOIN"
-              />
+        <el-form-item label="关联条件:">
+          <div v-for="(join, key) in formData.joinTemplate" :key="key" class="flex gap-4 w-full mb-2">
+            <el-select v-model="join.joins" placeholder="请选择关联方式">
+              <el-option label="LEFT JOIN" value="LEFT JOIN" />
+              <el-option label="INNER JOIN" value="INNER JOIN" />
+              <el-option label="RIGHT JOIN" value="RIGHT JOIN" />
             </el-select>
-            <el-input
-                v-model="join.table"
-                placeholder="请输入关联表"
-            />
-            <el-input
-              v-model="join.on"
-              placeholder="关联条件 table1.a = table2.b"
-            />
-            <el-button
-              type="danger"
-              icon="delete"
-              @click="() => formData.joinTemplate.splice(key, 1)"
-            >删除</el-button>
+            <el-input v-model="join.table" placeholder="请输入关联表" />
+            <el-input v-model="join.on" placeholder="关联条件 table1.a = table2.b" />
+            <el-button type="danger" icon="delete" @click="() => formData.joinTemplate.splice(key, 1)">删除</el-button>
           </div>
           <div class="flex justify-end w-full">
-            <el-button
-              type="primary"
-              icon="plus"
-              @click="addJoin"
-            >添加条件</el-button>
+            <el-button type="primary" icon="plus" @click="addJoin">添加条件</el-button>
           </div>
         </el-form-item>
 
-        <el-form-item
-          label="模板信息:"
-          prop="templateInfo"
-        >
-          <el-input
-            v-model="formData.templateInfo"
-            type="textarea"
-            :rows="12"
-            :clearable="true"
-            :placeholder="templatePlaceholder"
-          />
+        <el-form-item label="模板信息:" prop="templateInfo">
+          <el-input v-model="formData.templateInfo" type="textarea" :rows="12" :clearable="true"
+            :placeholder="templatePlaceholder" />
         </el-form-item>
-        <el-form-item
-          label="默认导出条数:"
-        >
-          <el-input-number
-            v-model="formData.limit"
-            :step="1"
-            :step-strictly="true"
-            :precision="0"
-          />
+        <el-form-item label="默认导出条数:">
+          <el-input-number v-model="formData.limit" :step="1" :step-strictly="true" :precision="0" />
         </el-form-item>
-        <el-form-item
-          label="默认排序条件:"
-        >
-          <el-input
-            v-model="formData.order"
-            placeholder="例:id desc"
-          />
+        <el-form-item label="默认排序条件:">
+          <el-input v-model="formData.order" placeholder="例:id desc" />
         </el-form-item>
-        <el-form-item
-          label="导出条件:"
-        >
-          <div
-            v-for="(condition,key) in formData.conditions"
-            :key="key"
-            class="flex gap-4 w-full mb-2"
-          >
-            <el-input
-              v-model="condition.from"
-              placeholder="需要从查询条件取的json key"
-            />
-            <el-input
-              v-model="condition.column"
-              placeholder="表对应的column"
-            />
-            <el-select
-              v-model="condition.operator"
-              placeholder="请选择查询条件"
-            >
-              <el-option
-                v-for="item in typeSearchOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
+        <el-form-item label="导出条件:">
+          <div v-for="(condition, key) in formData.conditions" :key="key" class="flex gap-4 w-full mb-2">
+            <el-input v-model="condition.from" placeholder="需要从查询条件取的json key" />
+            <el-input v-model="condition.column" placeholder="表对应的column" />
+            <el-select v-model="condition.operator" placeholder="请选择查询条件">
+              <el-option v-for="item in typeSearchOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
-            <el-button
-              type="danger"
-              icon="delete"
-              @click="() => formData.conditions.splice(key, 1)"
-            >删除</el-button>
+            <el-button type="danger" icon="delete" @click="() => formData.conditions.splice(key, 1)">删除</el-button>
           </div>
           <div class="flex justify-end w-full">
-            <el-button
-              type="primary"
-              icon="plus"
-              @click="addCondition"
-            >添加条件</el-button>
+            <el-button type="primary" icon="plus" @click="addCondition">添加条件</el-button>
           </div>
         </el-form-item>
       </el-form>
@@ -543,17 +307,19 @@ const rule = reactive({
 
 const searchRule = reactive({
   createdAt: [
-    { validator: (rule, value, callback) => {
-      if (searchInfo.value.startCreatedAt && !searchInfo.value.endCreatedAt) {
-        callback(new Error('请填写结束日期'))
-      } else if (!searchInfo.value.startCreatedAt && searchInfo.value.endCreatedAt) {
-        callback(new Error('请填写开始日期'))
-      } else if (searchInfo.value.startCreatedAt && searchInfo.value.endCreatedAt && (searchInfo.value.startCreatedAt.getTime() === searchInfo.value.endCreatedAt.getTime() || searchInfo.value.startCreatedAt.getTime() > searchInfo.value.endCreatedAt.getTime())) {
-        callback(new Error('开始日期应当早于结束日期'))
-      } else {
-        callback()
-      }
-    }, trigger: 'change' }
+    {
+      validator: (rule, value, callback) => {
+        if (searchInfo.value.startCreatedAt && !searchInfo.value.endCreatedAt) {
+          callback(new Error('请填写结束日期'))
+        } else if (!searchInfo.value.startCreatedAt && searchInfo.value.endCreatedAt) {
+          callback(new Error('请填写开始日期'))
+        } else if (searchInfo.value.startCreatedAt && searchInfo.value.endCreatedAt && (searchInfo.value.startCreatedAt.getTime() === searchInfo.value.endCreatedAt.getTime() || searchInfo.value.startCreatedAt.getTime() > searchInfo.value.endCreatedAt.getTime())) {
+          callback(new Error('开始日期应当早于结束日期'))
+        } else {
+          callback()
+        }
+      }, trigger: 'change'
+    }
   ],
 })
 
@@ -568,7 +334,7 @@ const tableData = ref([])
 const searchInfo = ref({})
 const dbList = ref([])
 
-const getDbFunc = async() => {
+const getDbFunc = async () => {
   const res = await getDB()
   if (res.code === 0) {
     dbList.value = res.data.dbList
@@ -585,7 +351,7 @@ const onReset = () => {
 
 // 搜索
 const onSubmit = () => {
-  elSearchFormRef.value?.validate(async(valid) => {
+  elSearchFormRef.value?.validate(async (valid) => {
     if (!valid) return
     page.value = 1
     pageSize.value = 10
@@ -606,7 +372,7 @@ const handleCurrentChange = (val) => {
 }
 
 // 查询
-const getTableData = async() => {
+const getTableData = async () => {
   const table = await getSysExportTemplateList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
   if (table.code === 0) {
     tableData.value = table.data.list
@@ -621,7 +387,7 @@ getTableData()
 // ============== 表格控制部分结束 ===============
 
 // 获取需要的字典 可能为空 按需保留
-const setOptions = async() => {
+const setOptions = async () => {
 }
 
 // 获取需要的字典 可能为空 按需保留
@@ -646,12 +412,12 @@ const deleteRow = (row) => {
 }
 
 // 多选删除
-const onDelete = async() => {
+const onDelete = async () => {
   ElMessageBox.confirm('确定要删除吗?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
-  }).then(async() => {
+  }).then(async () => {
     const ids = []
     if (multipleSelection.value.length === 0) {
       ElMessage({
@@ -661,9 +427,9 @@ const onDelete = async() => {
       return
     }
     multipleSelection.value &&
-    multipleSelection.value.map(item => {
-      ids.push(item.ID)
-    })
+      multipleSelection.value.map(item => {
+        ids.push(item.ID)
+      })
     const res = await deleteSysExportTemplateByIds({ ids })
     if (res.code === 0) {
       ElMessage({
@@ -682,7 +448,7 @@ const onDelete = async() => {
 const type = ref('')
 
 // 更新行
-const updateSysExportTemplateFunc = async(row) => {
+const updateSysExportTemplateFunc = async (row) => {
   const res = await findSysExportTemplate({ ID: row.ID })
   type.value = 'update'
   if (res.code === 0) {
@@ -698,7 +464,7 @@ const updateSysExportTemplateFunc = async(row) => {
 }
 
 // 删除行
-const deleteSysExportTemplateFunc = async(row) => {
+const deleteSysExportTemplateFunc = async (row) => {
   const res = await deleteSysExportTemplate({ ID: row.ID })
   if (res.code === 0) {
     ElMessage({
@@ -736,7 +502,7 @@ const closeDialog = () => {
   }
 }
 // 弹窗确定
-const enterDialog = async() => {
+const enterDialog = async () => {
   // 判断 formData.templateInfo 是否为标准json格式 如果不是标准json 则辅助调整
   try {
     JSON.parse(formData.value.templateInfo)
@@ -771,7 +537,7 @@ const enterDialog = async() => {
     reqData.joinTemplate[i].templateID = reqData.templateID
   }
 
-  elFormRef.value?.validate(async(valid) => {
+  elFormRef.value?.validate(async (valid) => {
     if (!valid) return
     let res
     switch (type.value) {
@@ -798,6 +564,4 @@ const enterDialog = async() => {
 
 </script>
 
-<style>
-
-</style>
+<style></style>

@@ -3,10 +3,10 @@
  */
 
 const config = {
-  appName: 'Alex',
-  appLogo: 'logo.png',
+  appName: "和木世纪",
+  appLogo: "logo.png",
   showViteLogo: true,
   logs: [],
-}
+};
 
-export default config
+export default config;

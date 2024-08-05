@@ -2,7 +2,7 @@
     <div>
         <div class="gva-search-box">
             <el-form ref="searchForm" :inline="true" :model="searchInfo">
-                <el-form-item label="部门" style="width:200px;" prop="method">
+                <!-- <el-form-item label="部门" style="width:200px;" prop="method">
                 </el-form-item>
                 <el-form-item label="类型" style="width:200px;" prop="method">
                     <el-select v-model="searchInfo.mold" placeholder="请选择">
@@ -10,19 +10,16 @@
                             :value="item.value">
                         </el-option>
                     </el-select>
+                </el-form-item> -->
+                <el-form-item label="岗位名称" prop="method" style="width:200px;">
+                    <el-input v-model="searchInfo.post_name" placeholder="岗位名称" />
                 </el-form-item>
-                <el-form-item label="类别" prop="method" style="width:200px;">
-
-                </el-form-item>
-                <el-form-item label="受检物名称" prop="method" style="width:200px;">
-                    <el-input v-model="searchInfo.checkout_name" placeholder="受检物名称" />
-                </el-form-item>
-                <el-form-item label="供应商名称" prop="method" style="width:200px;">
+                <!-- <el-form-item label="供应商名称" prop="method" style="width:200px;">
                     <el-input v-model="searchInfo.Post" placeholder="供应商名称" />
                 </el-form-item>
                 <el-form-item label="项目名称" prop="project" style="width:200px;">
                     <el-input v-model="searchInfo.project" placeholder="项目名称" />
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item>
                     <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
                     <el-button icon="refresh" @click="onReset">重置</el-button>
@@ -35,6 +32,11 @@
             </div>
             <el-table :data="tableData" @sort-change="sortChange" @selection-change="handleSelectionChange">
                 <el-table-column align="left" label="ID" min-width="150" prop="ID" />
+                <el-table-column align="left" label="岗位名称" min-width="150" prop="post_name" />
+                <el-table-column align="left" label="岗位类别" min-width="150" prop="post_category" />
+                <el-table-column align="left" label="岗位代码" min-width="150" prop="post_code" />
+                <el-table-column align="left" label="单位名称" min-width="150" prop="organization_name" />
+                <el-table-column align="left" label="从事工作" min-width="150" prop="perform_work" />
                 <el-table-column align="left" label="招考人数" min-width="150" prop="enter_number" />
                 <el-table-column align="left" label="入围比例" min-width="150" prop="enter_ratio" />
                 <el-table-column align="left" label="招考年份" min-width="150" prop="enter_year">
@@ -45,12 +47,7 @@
                 </el-table-column>
                 <el-table-column align="left" label="进面分数线" min-width="150" prop="fractional_line" />
                 <el-table-column align="left" label="数据来源" min-width="150" prop="enter_source" />
-                <el-table-column align="left" label="岗位名称" min-width="150" prop="post_name" />
-                <el-table-column align="left" label="岗位代码" min-width="150" prop="post_code" />
-                <el-table-column align="left" label="岗位类别" min-width="150" prop="post_category" />
-                <el-table-column align="left" label="从事工作" min-width="150" prop="perform_work" />
 
-                <el-table-column align="left" label="单位名称" min-width="150" prop="organization_name" />
 
                 <el-table-column align="left" label="单位序号" min-width="150" prop="organization_code" />
 
@@ -244,7 +241,7 @@ import {
 import { toSQLLine, formatDate } from '@/utils/stringFun'
 import { ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { EluiChinaAreaDht, Textcode } from 'elui-china-area-dht'
+import { EluiChinaAreaDht } from 'elui-china-area-dht'
 defineOptions({
     name: 'Setting',
 })
@@ -282,7 +279,7 @@ const onChange = (e) => {
 
 const handleClose = () => {
     initForm()
-    initDraw()
+    // initDraw()
     drawer.value = false
 }
 const ID = ref(1)
@@ -294,8 +291,6 @@ const showSettingDrawer = async (row) => {
     }
 }
 
-const initDraw = () => {
-}
 const form = ref({
     enter_number: "",
     enter_year: "",
@@ -331,6 +326,10 @@ const form = ref({
     district_code: '',
     work_place_text: ''
 })
+
+const initDraw = () => {
+
+}
 
 
 const sourceCategory = ref([
@@ -443,7 +442,41 @@ const page = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
-const searchInfo = ref({})
+const searchInfo = ref({
+    enter_number: 0,
+    enter_year: "",
+    enter_subject: "",
+    enter_source: "",
+    enter_ratio: "",
+    post_name: "",
+    post_code: "",
+    workplace: "",
+    post_category: "",
+    perform_work: "",
+    organization_name: "",
+    organization_code: "",
+    source_category: "",
+    educational_require: "",
+    degree_require: "",
+    career: "",
+    career_id: "",
+    title_require: "",
+    qualification: "",
+    other: "",
+    specialty: "",
+    subject: "",
+    subject_id: "",
+    fractional_line: "",
+    account: '',
+    gender: '',
+    work_experience: '',
+    apply_number: 0,
+    province_name: '',
+    province_code: '',
+    city_code: '',
+    district_code: '',
+    work_place_text: ''
+})
 const onReset = () => {
     searchInfo.value = {}
 }

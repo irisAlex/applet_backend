@@ -72,11 +72,22 @@ type ProvinceStatistic struct {
 
 type Fav struct {
 	global.GVA_MODEL
-	Pid   int64 `json:"pid" gorm:"comment:类别"`
-	Uid   int64 `json:"uid" gorm:"comment:类别"`
-	IsFav bool  `json:"isfav" gorm:"comment:类别"`
+	Pid   int64  `json:"pid" gorm:"comment:类别"`
+	Uid   string `json:"uid" gorm:"comment:类别"`
+	IsFav bool   `json:"isfav" gorm:"comment:类别"`
 }
 
 func (Fav) TableName() string {
+	return "applet_fav"
+}
+
+type User struct {
+	global.GVA_MODEL
+	Phone  string `json:"Phone" gorm:"comment:类别"`
+	Avatar string `json:"avatar" gorm:"comment:类别"`
+	Name   string `json:"name" gorm:"comment:类别"`
+}
+
+func (User) TableName() string {
 	return "applet_fav"
 }

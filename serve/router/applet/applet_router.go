@@ -2,7 +2,6 @@ package applet
 
 import (
 	v1 "github.com/flipped-aurora/gin-vue-admin/server/api/v1"
-	"github.com/flipped-aurora/gin-vue-admin/server/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,7 +9,7 @@ import (
 type SubjectRouter struct{}
 
 func (s *SubjectRouter) InitSubjectRouter(Router *gin.RouterGroup) {
-	SubjectApiRouter := Router.Group("Subject").Use(middleware.OperationRecord())
+	SubjectApiRouter := Router.Group("Subject").Use()
 	SubjectApiRouterWithoutRecord := Router.Group("Subject")
 
 	SubjectRouterApi := v1.ApiGroupApp.AppletApiGroup.SubjectApi
@@ -74,6 +73,28 @@ func (f *FavRouter) InitFavRouter(Router *gin.RouterGroup) {
 	}
 	{
 		typeApiRouterWithoutRecord.POST("getAllFavList", typeRouterApi.GetFavList) // 获取所有api
+		// 获取所有api
+	}
+}
+
+type UserRouter struct{}
+
+func (f *UserRouter) InitUserRouter(Router *gin.RouterGroup) {
+	typeApiRouter := Router.Group("User").Use()
+	typeApiRouterWithoutRecord := Router.Group("User")
+
+	typeRouterApi := v1.ApiGroupApp.AppletApiGroup.UserApi
+	{
+		typeApiRouter.POST("createUser", typeRouterApi.CreateUser)   // 创建Api
+		typeApiRouter.POST("deleteUser", typeRouterApi.DeleteUser)   // 删除Api
+		typeApiRouter.POST("getUserById", typeRouterApi.GetUserById) // 获取单条Api消息
+		typeApiRouter.POST("update", typeRouterApi.UpdateUser)       // 更新api
+		typeApiRouter.POST("is_fav", typeRouterApi.IsUser)           // 更新api
+
+		// SubjectApiRouter.DELETE("deleteApisByIds", SubjectRouterApi.DeleteApisByIds) // 删除选中api
+	}
+	{
+		typeApiRouterWithoutRecord.POST("getAllUserList", typeRouterApi.GetUserList) // 获取所有api
 		// 获取所有api
 	}
 }

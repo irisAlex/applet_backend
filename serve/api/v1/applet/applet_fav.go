@@ -148,7 +148,7 @@ func (s *FavApi) IsFav(c *gin.Context) {
 }
 
 func (s *FavApi) GetFavPost(c *gin.Context) {
-	var idInfo request.GetById
+	var idInfo request.GetByName
 	err := c.ShouldBindJSON(&idInfo)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
@@ -159,7 +159,7 @@ func (s *FavApi) GetFavPost(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	fpost, err := FavService.GetFavPost(idInfo.ID)
+	fpost, err := FavService.GetFavPost(idInfo.Name)
 	if err != nil {
 		global.GVA_LOG.Error("获取失败!", zap.Error(err))
 		response.FailWithMessage("获取失败", c)

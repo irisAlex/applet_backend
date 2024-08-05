@@ -45,29 +45,17 @@ func (apiService *SubjectApiService) GetAPIInfoList(api applet.Subject, info req
 	db := global.GVA_DB.Model(&applet.Subject{})
 	var apiList []applet.Subject
 
-	// if api.Addr != "" {
-	// 	db = db.Where("addr LIKE ?", api.Addr)
-	// }
+	if api.Name != "" {
+		db = db.Where("name = ?", api.Name)
+	}
 
-	// if api.Contacts != "" {
-	// 	db = db.Where("contacts LIKE ?", api.Contacts)
-	// }
+	if api.Education_Level_Name != "" {
+		db = db.Where("education_level_name = ?", api.Education_Level_Name)
+	}
 
-	// if api.Email != "" {
-	// 	db = db.Where("email LIKE ?", api.Email)
-	// }
-
-	// if api.Phone != "" {
-	// 	db = db.Where("phone LIKE ?", api.Phone)
-	// }
-
-	// if api.Product != "" {
-	// 	db = db.Where("product LIKE ?", api.Product)
-	// }
-
-	// if api.Name != "" {
-	// 	db = db.Where("name = ?", api.Name)
-	// }
+	if api.Level_Name != "" {
+		db = db.Where("level_name = ?", api.Level_Name)
+	}
 
 	err = db.Count(&total).Error
 

@@ -14,6 +14,10 @@ type FavResponse struct {
 	Applet applet.Fav `json:"fav"`
 }
 
+type UserResponse struct {
+	Applet applet.User `json:"user"`
+}
+
 type FavArrResponse struct {
 	Applet []applet.Post `json:"favp"`
 }

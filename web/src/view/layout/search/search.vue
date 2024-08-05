@@ -1,36 +1,24 @@
 <template>
   <div class="search-component items-center">
-    <div
-      class="gvaIcon gvaIcon-refresh"
-      :class="[reload ? 'reloading' : '']"
-      @click="handleReload"
-    />
+    <div class="gvaIcon gvaIcon-refresh" :class="[reload ? 'reloading' : '']" @click="handleReload" />
     <Screenfull class="search-icon" />
-    <div
-      class="gvaIcon gvaIcon-customer-service"
-      @click="toService"
-    />
-    <el-switch
-      v-model="isDark"
-      :active-action-icon="Moon"
-      :inactive-action-icon="Sunny"
-      @change="handleDarkSwitch"
-    />
+    <div class="gvaIcon gvaIcon-customer-service" @click="toService" />
+    <el-switch v-model="isDark" :active-action-icon="Moon" :inactive-action-icon="Sunny" @change="handleDarkSwitch" />
   </div>
 </template>
 
 <script setup>
 import Screenfull from '@/view/layout/screenfull/index.vue'
 import { emitter } from '@/utils/bus.js'
-import  { Sunny, Moon } from '@element-plus/icons-vue'
+import { Sunny, Moon } from '@element-plus/icons-vue'
 import { ref, watchEffect } from 'vue'
 
 defineOptions({
   name: 'BtnBox',
 })
-const isDark = ref(localStorage.getItem('isDark') === 'true' || true )
+const isDark = ref(localStorage.getItem('isDark') === 'true' || true)
 
-watchEffect(() =>{
+watchEffect(() => {
   if (isDark.value) {
     document.documentElement.classList.add('dark')
     localStorage.setItem('isDark', true)
@@ -48,24 +36,26 @@ const handleReload = () => {
   }, 500)
 }
 const toService = () => {
-  window.open('https://support.qq.com/product/371961')
+  window.open('')
 }
 
-const handleDarkSwitch = (e) =>{
- isDark.value = e
+const handleDarkSwitch = (e) => {
+  isDark.value = e
 }
 
 </script>
 <style scoped lang="scss">
-
 .search-component {
   @apply inline-flex overflow-hidden text-center gap-5 mr-5 text-black dark:text-gray-100;
-  div{
+
+  div {
     @apply cursor-pointer;
   }
+
   .el-input__inner {
     @apply border-b border-solid border-gray-300;
   }
+
   .el-dropdown-link {
     @apply cursor-pointer;
   }
@@ -75,8 +65,8 @@ const handleDarkSwitch = (e) =>{
   font-size: 18px;
 }
 
-.reloading{
-  animation:turn 0.5s linear infinite;
+.reloading {
+  animation: turn 0.5s linear infinite;
 }
 
 @keyframes turn {
@@ -100,5 +90,4 @@ const handleDarkSwitch = (e) =>{
     transform: rotate(360deg);
   }
 }
-
 </style>

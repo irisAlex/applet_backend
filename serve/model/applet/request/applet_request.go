@@ -26,3 +26,10 @@ type SearchFavParams struct {
 	OrderKey string `json:"orderKey"` // 排序
 	Desc     bool   `json:"desc"`     // 排序方式:升序false(默认)|降序true
 }
+
+type SearchUserParams struct {
+	applet.User
+	request.PageInfo
+	OrderKey string `json:"orderKey"` // 排序
+	Desc     bool   `json:"desc"`     // 排序方式:升序false(默认)|降序true
+}

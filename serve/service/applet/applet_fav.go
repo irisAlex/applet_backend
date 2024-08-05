@@ -88,7 +88,7 @@ func (apiService *FavService) IsFav(id int) (api applet.Fav, err error) {
 	return
 }
 
-func (apiService *FavService) GetFavPost(uid int) (res []applet.Post, err error) {
-	err = global.GVA_DB.Raw("SELECT applet_post.* FROM applet_fav LEFT JOIN applet_post ON applet_post.id = applet_fav.pid Where applet_fav.uid=?", uid).Scan(&res).Error
+func (apiService *FavService) GetFavPost(uid string) (res []applet.Post, err error) {
+	err = global.GVA_DB.Debug().Raw("SELECT applet_post.* FROM applet_fav LEFT JOIN applet_post ON applet_post.id = applet_fav.pid Where applet_fav.uid=? AND is_fav=?", uid, true).Scan(&res).Error
 	return
 }

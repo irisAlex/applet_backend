@@ -13,15 +13,15 @@
                             <a-input v-model:value="searchInfo.education_level_name" placeholder="学历"></a-input>
                         </a-form-item>
                     </a-col>
-                    <a-col :span="6">
+                    <!-- <a-col :span="6">
                         <a-form-item label="学科">
                             <a-input v-model:value="searchInfo.level_name" placeholder="学科"></a-input>
                         </a-form-item>
-                    </a-col>
+                    </a-col> -->
                 </a-row>
                 <a-row>
                     <a-col :span="24" style="text-align: left;margin-bottom:20px;">
-                        <a-button type="primary" html-type="submit" :icon="h(SearchOutlined)">
+                        <a-button type="primary" html-type="submit" :icon="h(SearchOutlined)" @click="onSubmit">
                             查询</a-button>
                         <a-button style="margin: 0 8px" @click="onReset" :icon="h(SyncOutlined)">重置</a-button>
                     </a-col>
@@ -186,9 +186,12 @@ const formState = ref({
     parent_id: 0
 })
 const editApiFunc = async (row: any) => {
+
+
+    console.log(row)
     const res = await getSubjectById({ id: row.ID })
-    formState.value = res.data.Subject
-    console.log(formState.value)
+    formState.value = res.data.subject
+    console.log(formState, 222)
     showModal('edit')
 }
 const { x, y, isDragging } = useDraggable(modalTitleRef);
@@ -263,8 +266,17 @@ const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
 
+// 搜索
+const onSubmit = () => {
+    page.value = 1
+    pageSize.value = 10
+    getTableData()
+}
+
+
 // 查询
 const getTableData = async () => {
+    console.log(searchInfo.value)
     const table = await getSubjectList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
     if (table.code === 0) {
         tableData.value = table.data.list
